@@ -1,6 +1,9 @@
 name = "wrlforge-site"
 main = "worker.js"
 compatibility_date = "2023-10-30"
+# Pinned so deploys work with an account-scoped CLOUDFLARE_API_TOKEN
+# (avoids the user-level /memberships lookup that 400s for scoped tokens).
+account_id = "a3fb626872474ce6d6d3a55829a760e7"
 
 routes = [
   { pattern = "wrlforge.com", custom_domain = true },
