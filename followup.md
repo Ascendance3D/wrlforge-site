@@ -36,7 +36,23 @@ the repo's LICENSE or say "MIT" somewhere, if you want to advertise it louder.
 
 ---
 
-## 2. Acknowledgements + Remembrance page (the big one — do this rested)
+## 2. Rename the hero model → "the Red Raven" (by LSS)
+
+The bike is titled "HOG!" internally (its `WorldInfo`), but LSS's name for it is
+**"the Red Raven"** — that's what the site should say. Update the footer credit:
+
+- In `worker.js`, footer `.credit` span, change
+  `Hero world: &ldquo;HOG!&rdquo; by LSS`
+  → `Hero world: &ldquo;the Red Raven&rdquo; by LSS`.
+- Ships with the **same redeploy** as the MIT footer flip (§1) — do both, deploy once.
+- (Optional) the display name also appears in comments in
+  `public/hero-harley.wrl` / `public/harley.wrl`; the model files can be renamed
+  too if you want (`red-raven.wrl`), but that means updating the `Inline` url and
+  the `worker.js` `src` — cosmetic, not required.
+
+---
+
+## 3. Acknowledgements + Remembrance page (the big one — do this rested)
 
 You have **~20–30 people** to thank, plus a **remembrance for those we've lost**.
 This deserves a real page, not a footer line. Deferred on purpose.
