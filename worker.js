@@ -581,7 +581,7 @@ ${axisGizmo()}
   </section>
 
   <footer>
-    <div>MIT-licensed on GitHub · Created by Ryan Bundy</div>
+    <div>© 2026 WRL Forge · by Ryan Bundy (aka BassMekanik2000)</div>
     <div class="r"><span>${version} · ${chan}</span><a href="https://skate.fm" target="_blank" rel="noopener">Powered by Skate.FM</a></div>
   </footer>
 </div>
