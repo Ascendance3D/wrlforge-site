@@ -362,6 +362,14 @@ body{
 .planet.p-amber{bottom:15%;right:12%;width:88px;opacity:.85}
 .planet-svg,.prim-svg{display:block;width:100%;height:auto}
 
+/* live X_ITE scene: hidden until the runtime proves it can render, then it
+   swaps in for the SVG ring-planet (which stays the no-JS/no-WebGL fallback) */
+.xite-slot{display:none;aspect-ratio:1/1}
+.xite-slot x3d-canvas{display:block;width:100%;height:100%;background:transparent!important;border:0}
+.xite-slot x3d-canvas canvas{background:transparent!important}
+body.xite-on #ring-fallback{display:none}
+body.xite-on .xite-slot{display:block}
+
 /* ---------- shell ---------- */
 .wrap{position:relative;z-index:1;max-width:1320px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
 
@@ -443,6 +451,8 @@ footer{border-top:1px solid var(--wire);padding:22px 34px;display:flex;justify-c
   flex-wrap:wrap;font-family:var(--mono);font-size:12px;letter-spacing:.5px;color:var(--muted)}
 footer a{color:var(--cyan);text-decoration:none} footer a:hover{color:var(--ice)}
 footer .r{display:flex;gap:16px;align-items:center}
+footer .credit{display:inline-block;margin-top:6px;font-size:11px;opacity:.8;line-height:1.5}
+footer .credit a{color:var(--amber)} footer .credit a:hover{color:var(--ice)}
 
 /* left object palette */
 .palette{position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:1;width:104px;
@@ -510,7 +520,8 @@ footer .r{display:flex;gap:16px;align-items:center}
 <div class="stars"></div>
 <div class="scene">
   <div class="horizon-glow"></div>
-  <div class="planet p-ring">${ringedPlanet(300)}</div>
+  <div class="planet p-ring" id="ring-fallback">${ringedPlanet(300)}</div>
+  <div class="planet p-ring xite-slot" id="xite-host" aria-hidden="true"></div>
   <div class="planet p-cyan">${spinningGlobe(112, { hue: "cyan", dur: 11 })}</div>
   <div class="planet p-mag">${spinningGlobe(62, { hue: "magenta", tilt: 32, dur: 9 })}</div>
   <div class="planet p-amber">${spinningGlobe(88, { hue: "amber", tilt: -12, rev: true, dur: 13 })}</div>
@@ -581,10 +592,55 @@ ${axisGizmo()}
   </section>
 
   <footer>
-    <div>© 2026 WRL Forge · by Ryan Bundy (aka BassMekanik2000)</div>
+    <div>© 2026 WRL Forge · by Ryan Bundy (aka BassMekanik2000)<br>
+      <span class="credit">Hero world: <a href="https://lss3d.silver-hosting.com/index.php?op=worlds" target="_blank" rel="noopener">&ldquo;HOG!&rdquo; by LSS</a> &middot; rendered live in X_ITE &middot; used with permission &#9825;</span></div>
     <div class="r"><span>${version} · ${chan}</span><a href="https://skate.fm" target="_blank" rel="noopener">Powered by Skate.FM</a></div>
   </footer>
 </div>
+
+<script>
+// Live hero scene, rendered by X_ITE — the product's own renderer, on the
+// product's own landing page. Progressive enhancement: the SVG ring-planet is
+// the fallback, and X_ITE only swaps in after it proves it can actually render.
+// Boots on idle (never blocks paint); skipped entirely for reduced-motion,
+// small screens, or no WebGL — those keep the static SVG.
+(function () {
+  var host = document.getElementById("xite-host");
+  if (!host || !window.matchMedia) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (window.innerWidth < 900) return;
+  try {
+    var probe = document.createElement("canvas");
+    if (!(window.WebGLRenderingContext &&
+          (probe.getContext("webgl") || probe.getContext("experimental-webgl")))) return;
+  } catch (e) { return; }
+
+  if (!window.customElements) return;
+  var started = false;
+  function boot() {
+    if (started) return; started = true;
+    var s = document.createElement("script");
+    s.src = "/x_ite.min.js";
+    // X_ITE registers <x3d-canvas> during script eval; whenDefined guarantees
+    // it's upgradable before we mount (onload alone can race the registration).
+    s.onload = function () { customElements.whenDefined("x3d-canvas").then(mount); };
+    document.head.appendChild(s);
+  }
+  function mount() {
+    var c = document.createElement("x3d-canvas");
+    c.setAttribute("src", "/hero-harley.wrl");
+    c.setAttribute("contextMenu", "false");
+    c.setAttribute("splashScreen", "false");
+    // Only swap in once the scene has actually loaded; on any load/parse error
+    // we drop the canvas and leave the SVG ring-planet fallback in place.
+    c.addEventListener("load", function () { document.body.classList.add("xite-on"); });
+    c.addEventListener("error", function () { if (c.parentNode) c.remove(); });
+    host.appendChild(c);
+  }
+  if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 2600 });
+  else setTimeout(boot, 1400);
+})();
+</script>
 </body>
 </html>`;
 }

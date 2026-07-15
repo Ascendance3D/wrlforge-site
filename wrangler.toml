@@ -9,3 +9,11 @@ routes = [
   { pattern = "wrlforge.com", custom_domain = true },
   { pattern = "www.wrlforge.com", custom_domain = true }
 ]
+
+# Self-hosted static assets (house rule: no CDN). Serves the vendored X_ITE
+# runtime + hero .wrl for the live scene. Exact-file matches only — everything
+# else (including "/") falls through to the Worker, which renders the HTML.
+[assets]
+directory = "./public"
+html_handling = "none"
+not_found_handling = "none"

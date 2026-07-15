@@ -12,9 +12,16 @@ wrlforge.com** (Phases 1 & 2 done). Remaining work, **in this order**:
 1. **[PENDING MERGE] MIT relicense of the *product* repo** — PR is open:
    https://github.com/DJAscendance/wrlforge/pull/1 . When it merges, do the
    one small site follow-up in "Post-merge" below (flip footer copy to MIT).
-2. **Phase 3 — live X_ITE scene** in the hero (owner's favourite; see plan).
+2. **[DONE] Phase 3 — live X_ITE scene** in the hero: LSS's "HOG!" motorbike
+   (`.wrl`, used with her permission) rendered live by X_ITE, transparent,
+   turntable-spinning, top-right where the ring-planet was. See "Phase 3" below.
+   Built + verified locally; **NOT yet deployed** (awaiting owner deploy GO).
 3. **Phase 3.5 — create a GitHub remote** for THIS site repo (needs owner GO;
    outward-facing). Suggested name `DJAscendance/wrlforge-site`.
+4. **Optional — LSS dedication/thank-you page**. Owner floated a dedication page
+   for LSS (author of the hero model). For now she's credited in the footer with
+   a link to https://lss3d.silver-hosting.com/index.php?op=worlds . A fuller
+   page is a nice-to-have follow-up.
 
 ## What's live now (Phases 1 & 2)
 
@@ -55,32 +62,51 @@ Flip the footer in `worker.js` from the copyright-only line to reference MIT,
 e.g. `MIT © 2026 WRL Forge · Ryan Bundy (BassMekanik2000)`, then redeploy. That
 is the entire site-side follow-up.
 
-## Phase 3 plan — live X_ITE scene
+## Phase 3 — live X_ITE scene (DONE, not yet deployed)
 
-Goal: one **lightweight, real X_ITE-rendered spinning `.wrl`** dropped into the
-hero viewport frame (the product's actual renderer, on the product's landing
-page — the on-brand flex). Owner: *"omg that shit is amazing bro… just one
-scene, lighter weight."*
+The hero now renders **LSS's "HOG!" motorbike** (2003 Cybertown item, ~170 KB
+`.wrl` + `hog1.jpg` texture) live in X_ITE — transparent, slow turntable spin,
+top-right in the old ring-planet slot. SVG ring-planet remains the fallback.
 
-- **Serve X_ITE self-hosted (no CDN — house rule).** Vendor
-  `node_modules/x_ite/dist/x_ite.min.js` (~1.36 MB, MIT) from the product repo
-  into this repo. Cleanest delivery: add Cloudflare **Workers Static Assets**
-  (`[assets] directory = "./public"` in `wrangler.toml`) and drop
-  `x_ite.min.js` + a small `.wrl` in `public/`; the Worker keeps rendering the
-  HTML, static assets serve the JS/model. (Alt: a Worker route that returns the
-  vendored JS as text with a long `Cache-Control`.)
-- **The model**: author a small aesthetic `.wrl` (low-poly, cyan/amber to match)
-  or reuse a product test fixture. Keep it tiny.
-- **Integration**: lazy-init X_ITE (only after load / when scrolled into view)
-  so it never blocks paint. Transparent background, autorotate, ~300px. Likely
-  place it where the ring-planet is (top-right) or as a companion. Keep the SVG
-  planets as the no-JS/no-WebGL fallback.
-- **Motion/CSP**: pause autorotate under `prefers-reduced-motion`. The Worker
-  sets no CSP today; if one is added later, X_ITE needs WebGL + possibly
-  `wasm-unsafe-eval`. Same-origin assets avoid cross-origin issues.
+**Licensing**: model is LSS's, **used with her explicit permission** (she sent
+the files directly to owner). Credited in the footer with a link to her worlds
+site. Do NOT reuse other scraped Cybertown items without similar permission.
+
+**How it's wired (`public/`, served via Workers Static Assets):**
+- `wrangler.toml` has `[assets] directory="./public"`, `html_handling="none"`,
+  `not_found_handling="none"` → exact-file matches serve as assets, everything
+  else (incl. `/`) falls through to the Worker. Verified locally.
+- `worker.js`: `#xite-host` slot next to `#ring-fallback`; an inline boot script
+  lazy-loads `/x_ite.min.js` on `requestIdleCallback`, then mounts
+  `<x3d-canvas src="/hero-harley.wrl">`. On the canvas `load` event it adds
+  `body.xite-on` (CSS hides the SVG, shows the canvas). Guards: skips on
+  `prefers-reduced-motion`, `innerWidth < 900`, or no WebGL → SVG stays.
+- `public/hero-harley.wrl` — wrapper that `Inline`s `harley.wrl`, adds a
+  transparent `Background { transparency 1 }`, key/fill `DirectionalLight`s, a
+  framing `Viewpoint { position 0 0 3.9 }`, and a `TimeSensor`+
+  `OrientationInterpolator`+ROUTE Y-spin. A re-centering `Transform
+  { translation 1.6052 1.0778 0 }` puts the model's bbox center on the origin so
+  the spin doesn't swing (measured via X_ITE `getBBox`, center was
+  (-1.6052,-1.0778,0.06)). LSS's `harley.wrl` is untouched except its opaque
+  gray `Background` node was removed (so the canvas can be transparent).
+
+**GOTCHAS (important):**
+- **X_ITE `dist/x_ite.min.js` is NOT self-contained.** It lazily `import()`s
+  component chunks from a sibling `assets/` dir AND loads `x_ite.css` (shadow
+  DOM). You MUST vendor all three: `x_ite.min.js` + `x_ite.css` +
+  `assets/` (we pruned the unminified `.js` twins; ~8.8 MB, 96 files). Missing
+  `x_ite.css` → the internal canvas collapses to 1×1 and renders nothing.
+- **The `<canvas>` is inside `x3d-canvas.shadowRoot`** — `document.querySelector('x3d-canvas canvas')` finds nothing; use the shadow root.
+- **Chrome caches 404s.** While iterating I loaded the page before vendoring the
+  assets; Chrome then served the cached 404 for `x_ite.css` even after the file
+  existed. A **hard reload (Ctrl+Shift+R)** fixed it. Not a production concern
+  (fresh visitors), but bites during local dev — hard-reload after adding assets.
+- X_ITE with no `Background` clears to **opaque black**, not transparent — you
+  need `Background { transparency 1 }` for a see-through canvas.
+- Math/bbox: `x3d-canvas.browser.currentScene.getNamedNode('Spin')` → reach the
+  internal node via its symbol props → `getBBox(new window.X3D.Box3())`.
 - **Reference**: the product renders X_ITE-only; see product repo
-  `renderer/preview.js` / `renderer/world-preview.js` and `docs/PREVIEW_ARCHITECTURE.md`
-  for how the app drives X_ITE.
+  `renderer/preview.js` / `renderer/world-preview.js` and `docs/PREVIEW_ARCHITECTURE.md`.
 
 ## Deploy runbook + gotchas
 

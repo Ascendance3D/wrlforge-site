@@ -1,0 +1,37 @@
+#VRML V2.0 utf8
+
+# Hero wrapper for the WRL Forge landing page. Inlines LSS's "HOG!" (2003)
+# and presents it for the hero: transparent background (composits over the
+# site's starfield/grid), soft key/fill lighting, slow turntable spin.
+# The model file (harley.wrl) is LSS's, used with permission.
+
+Background { transparency 1 }
+NavigationInfo { type "NONE" headlight TRUE }
+# Frame the (re-centered) bike to fill the hero slot; distance chosen to
+# contain its swept turntable volume with a little margin.
+Viewpoint { position 0 0 3.9 orientation 0 1 0 0 fieldOfView 0.785 description "Hero" }
+
+DirectionalLight { direction -0.4 -0.5 -0.75 intensity 0.85 color 0.85 0.93 1 }
+DirectionalLight { direction  0.6  0.25 -0.3 intensity 0.4  color 1 0.82 0.5 }
+
+DEF Spin Transform {
+  center 0 0 0
+  children [
+    # Re-center LSS's model on the origin (its bbox center is offset in its
+    # own file) so the turntable spin pivots cleanly with no swing.
+    Transform {
+      translation 1.6052 1.0778 0
+      children [
+        Inline { url "harley.wrl" }
+      ]
+    }
+  ]
+}
+
+DEF Clock TimeSensor { cycleInterval 20 loop TRUE }
+DEF Turn OrientationInterpolator {
+  key      [ 0 0.25 0.5 0.75 1 ]
+  keyValue [ 0 1 0 0, 0 1 0 1.5708, 0 1 0 3.1416, 0 1 0 4.7124, 0 1 0 6.2832 ]
+}
+ROUTE Clock.fraction_changed TO Turn.set_fraction
+ROUTE Turn.value_changed TO Spin.set_rotation
