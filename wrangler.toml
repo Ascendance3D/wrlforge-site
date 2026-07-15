@@ -1,0 +1,8 @@
+name = "wrlforge-site"
+main = "worker.js"
+compatibility_date = "2023-10-30"
+
+routes = [
+  { pattern = "wrlforge.com", custom_domain = true },
+  { pattern = "www.wrlforge.com", custom_domain = true }
+]
