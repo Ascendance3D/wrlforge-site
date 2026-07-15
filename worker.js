@@ -225,7 +225,6 @@ function gridFloor() {
   }
   return `<svg class="grid-floor" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <g stroke="#2f9fc9" stroke-width="1" opacity="0.5">${lines}</g>
-    <line x1="0" y1="0.5" x2="${W}" y2="0.5" stroke="#9fe8ff" stroke-width="1.5" opacity="0.9"/>
   </svg>`;
 }
 
@@ -436,9 +435,9 @@ h1 .vrml{color:var(--amber);text-shadow:0 0 26px rgba(255,178,60,.55)}
 .powered{padding:8px 34px 30px;max-width:940px}
 .powered .lbl{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:18px}
 .deps{display:flex;flex-wrap:wrap;gap:14px}
-.deps span{font-family:var(--mono);font-size:.86rem;letter-spacing:1px;color:var(--ice);border:1px solid var(--wire);
-  padding:7px 14px;border-radius:20px;transition:.2s;background:rgba(21,12,44,.4)}
-.deps span:hover{color:#fff;border-color:var(--ice);box-shadow:0 0 16px rgba(47,159,201,.35)}
+.deps a{font-family:var(--mono);font-size:.86rem;letter-spacing:1px;color:var(--ice);text-decoration:none;
+  border:1px solid var(--wire);padding:7px 14px;border-radius:20px;transition:.2s;background:rgba(21,12,44,.4)}
+.deps a:hover{color:#fff;border-color:var(--ice);box-shadow:0 0 16px rgba(47,159,201,.35)}
 
 footer{border-top:1px solid var(--wire);padding:22px 34px;display:flex;justify-content:space-between;gap:14px;
   flex-wrap:wrap;font-family:var(--mono);font-size:12px;letter-spacing:.5px;color:var(--muted)}
@@ -535,12 +534,12 @@ ${axisGizmo()}
         <polyline points="272,205 335,360" stroke-width="36" fill="none" stroke="#9fe8ff"/>
         <polyline points="365,160 365,360 440,360" stroke-width="40" fill="none" stroke="#ffb23c"/>
       </svg>
-      <span class="mark">WRL&nbsp;<b>FORGE</b></span>
+      <span class="mark"><b>FORGE</b></span>
     </div>
     <div class="nav-links">
       <a href="https://cybertownrevival.com" target="_blank" rel="noopener">Cybertown</a>
-      <a href="https://github.com/DJAscendance/wrlforge#readme" target="_blank" rel="noopener">Product</a>
-      <a href="https://github.com/DJAscendance/wrlforge" target="_blank" rel="noopener">Open Source</a>
+      <a href="https://github.com/DJAscendance/wrlforge" target="_blank" rel="noopener">App Repository</a>
+      <a href="https://opensource.org/osd" target="_blank" rel="noopener">Open Source</a>
     </div>
     <div class="vp-status">
       <span class="chip on">WALK</span><span class="chip">EXAMINE</span><span class="chip">FLY</span>
@@ -571,9 +570,13 @@ ${axisGizmo()}
   </main>
 
   <section class="powered">
-    <div class="lbl">Powered by open source ↘</div>
+    <div class="lbl">Open Source Tech ↘</div>
     <div class="deps">
-      <span>X_ITE</span><span>VSCodium</span><span>CodeMirror</span><span>Electron</span><span>Node.js</span>
+      <a href="https://create3000.github.io/x_ite/" target="_blank" rel="noopener">X_ITE</a>
+      <a href="https://vscodium.com" target="_blank" rel="noopener">VSCodium</a>
+      <a href="https://codemirror.net" target="_blank" rel="noopener">CodeMirror</a>
+      <a href="https://www.electronjs.org" target="_blank" rel="noopener">Electron</a>
+      <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>
     </div>
   </section>
 
