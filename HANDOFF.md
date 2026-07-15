@@ -12,12 +12,13 @@ wrlforge.com** (Phases 1 & 2 done). Remaining work, **in this order**:
 1. **[PENDING MERGE] MIT relicense of the *product* repo** — PR is open:
    https://github.com/DJAscendance/wrlforge/pull/1 . When it merges, do the
    one small site follow-up in "Post-merge" below (flip footer copy to MIT).
-2. **[DONE] Phase 3 — live X_ITE scene** in the hero: LSS's "HOG!" motorbike
-   (`.wrl`, used with her permission) rendered live by X_ITE, transparent,
-   turntable-spinning, top-right where the ring-planet was. See "Phase 3" below.
-   Built + verified locally; **NOT yet deployed** (awaiting owner deploy GO).
-3. **Phase 3.5 — create a GitHub remote** for THIS site repo (needs owner GO;
-   outward-facing). Suggested name `DJAscendance/wrlforge-site`.
+2. **[DONE + DEPLOYED] Phase 3 — live X_ITE scene** in the hero: LSS's "HOG!"
+   motorbike (`.wrl`, used with her permission) rendered live by X_ITE,
+   transparent, turntable-spinning, top-right where the ring-planet was. See
+   "Phase 3" below. **Deployed to wrlforge.com and verified live** (2026-07-15).
+3. **[DONE] Phase 3.5 — GitHub remote**: this repo is now
+   `DJAscendance/wrlforge-site` (**private**), `origin/master` tracking. No
+   secrets in the repo (CF token stays in shell env). Flip to public anytime.
 4. **Optional — LSS dedication/thank-you page**. Owner floated a dedication page
    for LSS (author of the hero model). For now she's credited in the footer with
    a link to https://lss3d.silver-hosting.com/index.php?op=worlds . A fuller
