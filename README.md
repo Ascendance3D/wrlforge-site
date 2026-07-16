@@ -21,3 +21,11 @@ npx wrangler deploy     # publishes to wrlforge.com + www.wrlforge.com
 ```
 
 Routes and the custom domain binding live in `wrangler.toml`.
+
+## License
+
+Code in this repository is MIT licensed — see [LICENSE](LICENSE).
+
+The hero model (`public/harley.wrl`, `public/hero-harley.wrl`,
+`public/hog1.jpg`) is third-party art used with permission and is **not**
+covered by that license — see [NOTICE](NOTICE) for details and attribution.

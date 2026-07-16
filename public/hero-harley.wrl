@@ -1,9 +1,15 @@
 #VRML V2.0 utf8
 
-# Hero wrapper for the WRL Forge landing page. Inlines LSS's "HOG!" (2003)
-# and presents it for the hero: transparent background (composits over the
-# site's starfield/grid), soft key/fill lighting, slow turntable spin.
-# The model file (harley.wrl) is LSS's, used with permission.
+# Hero wrapper for the WRL Forge landing page. Inlines LSS's "the Red Raven"
+# (2003, internal title "HOG!") and presents it for the hero: transparent
+# background (composits over the site's starfield/grid), soft key/fill
+# lighting, slow turntable spin.
+#
+# The model file (harley.wrl) and its texture (hog1.jpg) are LSS's, used
+# with permission on wrlforge.com only. Not licensed for reuse,
+# redistribution, or modification. See /NOTICE. This wrapper file (the
+# framing, lighting, animation, and re-centering below) is original and
+# MIT licensed along with the rest of this repo.
 
 Background { transparency 1 }
 NavigationInfo { type "NONE" headlight TRUE }

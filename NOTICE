@@ -1,0 +1,25 @@
+Third-party asset notice
+=========================
+
+This repository's code is MIT licensed (see LICENSE). The following assets
+are excluded from that license — they are third-party creative work, used
+with the original artist's explicit permission, and are NOT open-licensed:
+
+  public/harley.wrl
+  public/hero-harley.wrl
+  public/hog1.jpg
+
+"the Red Raven" (c) 2003 LSS. Made by LSS in May 2003 for Cybertown
+(internal VRML title: "HOG!"). Provided directly to Ryan Bundy and used,
+with LSS's permission, as the live hero scene on wrlforge.com, rendered
+client-side by X_ITE.
+
+Permission covers display on wrlforge.com only. These files are NOT
+licensed for reuse, redistribution, modification, or incorporation into
+other projects or sites. All rights to the original model and texture
+remain with LSS. If you'd like to use this work, contact LSS directly:
+https://lss3d.silver-hosting.com/index.php?op=worlds
+
+All other third-party library assets vendored in this repository (e.g. the
+X_ITE runtime under public/x_ite* and public/assets/) remain under their
+own respective upstream licenses — see https://create3000.github.io/x_ite/
