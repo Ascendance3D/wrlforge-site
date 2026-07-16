@@ -592,8 +592,8 @@ ${axisGizmo()}
   </section>
 
   <footer>
-    <div>© 2026 WRL Forge · by Ryan Bundy (aka BassMekanik2000)<br>
-      <span class="credit">Hero world: <a href="https://lss3d.silver-hosting.com/index.php?op=worlds" target="_blank" rel="noopener">&ldquo;HOG!&rdquo; by LSS</a> &middot; rendered live in X_ITE &middot; used with permission &#9825;</span></div>
+    <div>MIT © 2026 WRL Forge · Ryan Bundy (aka BassMekanik2000)<br>
+      <span class="credit">Hero world: <a href="https://lss3d.silver-hosting.com/index.php?op=worlds" target="_blank" rel="noopener">&ldquo;the Red Raven&rdquo; by LSS</a> &middot; rendered live in X_ITE &middot; used with permission &#9825;</span></div>
     <div class="r"><span>${version} · ${chan}</span><a href="https://skate.fm" target="_blank" rel="noopener">Powered by Skate.FM</a></div>
   </footer>
 </div>
