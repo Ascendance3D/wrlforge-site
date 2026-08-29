@@ -1,35 +1,42 @@
-# WRL Forge site — session handoff (2026-07-15)
+# WRL Forge site — session handoff (updated 2026-08-29)
 
 Working notes so the next session resumes **exactly** here. Owner: Ryan Bundy
 (aka **BassMekanik2000**). Owner works in staged phases and wants a STOP +
 report + GO/NO-GO between phases — don't run multiple phases uninterrupted.
 
-## TL;DR — resume point
+## TL;DR — current state
 
 The marketing site (this repo) is **redesigned, deployed, and LIVE at
-wrlforge.com** (Phases 1 & 2 done). Remaining work, **in this order**:
+wrlforge.com** (Phases 1, 2, 3 and 3.5 all done and deployed).
 
-1. **[PENDING MERGE] MIT relicense of the *product* repo** — PR is open:
-   https://github.com/DJAscendance/wrlforge/pull/1 . When it merges, do the
-   one small site follow-up in "Post-merge" below (flip footer copy to MIT).
-2. **[DONE + DEPLOYED] Phase 3 — live X_ITE scene** in the hero: LSS's "HOG!"
-   motorbike (`.wrl`, used with her permission) rendered live by X_ITE,
-   transparent, turntable-spinning, top-right where the ring-planet was. See
-   "Phase 3" below. **Deployed to wrlforge.com and verified live** (2026-07-15).
-3. **[DONE] Phase 3.5 — GitHub remote**: this repo is now
-   `DJAscendance/wrlforge-site` (**private**), `origin/master` tracking. No
-   secrets in the repo (CF token stays in shell env). Flip to public anytime.
-4. **Optional — LSS dedication/thank-you page**. Owner floated a dedication page
-   for LSS (author of the hero model). For now she's credited in the footer with
-   a link to https://lss3d.silver-hosting.com/index.php?op=worlds . A fuller
-   page is a nice-to-have follow-up.
+**Repo truth:**
+
+- Repository: `DJAscendance/wrlforge-site` — **public** since 2026-07-16.
+- Remote: `origin` → https://github.com/DJAscendance/wrlforge-site.git
+- Default branch: **`master`**; `origin/master` tracking.
+- No secrets in the repo (the Cloudflare token stays in the shell env).
+
+**Licensing truth (see "License situation" below — this changed):** both the
+product and this site are now **`GPL-3.0-or-later`**. The July 2026 MIT
+transition is **complete and superseded**.
+
+**Open work:**
+
+1. **Acknowledgements + Remembrance page** — owner has ~20–30 people to thank
+   plus a remembrance section. Blocked on the owner supplying names and
+   remembrance content; shape is sketched in `followup.md` §3. LSS is already
+   credited in the footer with a link to
+   https://lss3d.silver-hosting.com/index.php?op=worlds .
+2. **Dead `wireGlobe()`** in `worker.js` — safe to delete on the next edit.
+
+`followup.md` is **historical only** and carries a superseded banner; do not
+follow its MIT instructions.
 
 ## What's live now (Phases 1 & 2)
 
 - **Repo**: this one — `/home/ryan/Projects/cybertown/wrlforge-site` (separate
   from the product repo; promoted out of the product repo's untracked `site/`).
-  Local git only, **no GitHub remote yet**. Latest commits: footer copyright
-  fix → nav/link polish → Phase 2 redesign → Phase 1 (bug fix) → account_id.
+  Public on GitHub as `DJAscendance/wrlforge-site`, `origin/master` tracking.
 - **Phase 1**: fixed the broken downloads. The Worker used `/releases/latest`
   which 404s because `v1.3.0-beta.2` is a **prerelease**; every download button
   was 404ing. Now queries `/releases?per_page=15` and takes the newest
@@ -50,20 +57,37 @@ wrlforge.com** (Phases 1 & 2 done). Remaining work, **in this order**:
 
 ## License situation (important, don't get this wrong)
 
-- The **product repo is currently `UNLICENSED` / all-rights-reserved on `main`**.
-  PR #1 relicenses it to **MIT** (keeps the copyright line as MIT's one
-  condition — owner explicitly wants "fully open source, just my name in it").
-- Therefore the **site must NOT claim MIT/open-source about the product until
-  PR #1 is merged.** The current footer is copyright-only, which is accurate
-  either way. The "Open Source Tech" chips are fine — those *dependencies*
-  genuinely are OSS; that's the tech it's built ON, not the product's license.
+**Current, as of 2026-08-29 — this supersedes everything earlier:**
 
-### Post-merge (do this once PR #1 merges)
-Flip the footer in `worker.js` from the copyright-only line to reference MIT,
-e.g. `MIT © 2026 WRL Forge · Ryan Bundy (BassMekanik2000)`, then redeploy. That
-is the entire site-side follow-up.
+- The **product** `DJAscendance/wrlforge` is **`GPL-3.0-or-later`** as of commit
+  `2eb7c39e7ffd6b830155c4ee3d9b2dc8cb6aab1d`
+  ("chore: relicense WRLForge under GPL-3.0-or-later").
+- **This site's own code is `GPL-3.0-or-later` too** (lane OSS-2). `LICENSE` is
+  the canonical, unmodified GPLv3 text; the "or later" election is stated in
+  `README.md` and `NOTICE`, never inside the license text itself.
+- **Third-party components keep their own licenses.** The vendored X_ITE runtime
+  (v15.1.10) is MIT; its bundled fonts are Apache-2.0 / OFL-1.1 / Ubuntu Font
+  Licence, each with its license file retained beside it. Never relabel these as
+  GPL, and never delete their notices. Full inventory is in `NOTICE`.
+- **LSS's featured artwork is NOT GPL and never becomes GPL.** `public/harley.wrl`
+  and `public/hog1.jpg` are "the Red Raven" © 2003 LSS, used with her permission
+  for **display on wrlforge.com only** — no reuse, redistribution, or
+  modification. `public/hero-harley.wrl` is our own wrapper (GPL) that `Inline`s
+  her model; wrapping does not relicense it. Her footer credit and link must stay
+  visible. See `NOTICE` §2 for the exact terms.
+- **Contribution posture:** `GPL-3.0-or-later`, contributors keep copyright,
+  **no CLA, no copyright assignment**, DCO sign-off via `git commit -s`. See
+  `CONTRIBUTING.md`.
+- The "Open Source Tech" chips are fine — those *dependencies* genuinely are OSS;
+  that's the tech it's built ON, not the product's own license.
 
-## Phase 3 — live X_ITE scene (DONE, not yet deployed)
+### Historical (do NOT act on)
+The July 2026 MIT transition (product PR #1, then the site's MIT `LICENSE`,
+`NOTICE`, and `MIT ©` footer) is **complete and superseded** by the GPL decision
+above. `followup.md` still describes it and carries a superseded banner. If you
+find a document telling you to flip anything to MIT, it is stale.
+
+## Phase 3 — live X_ITE scene (DONE + DEPLOYED 2026-07-15)
 
 The hero now renders **LSS's "HOG!" motorbike** (2003 Cybertown item, ~170 KB
 `.wrl` + `hog1.jpg` texture) live in X_ITE — transparent, slow turntable spin,
@@ -111,7 +135,8 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 
 ## Deploy runbook + gotchas
 
-- **Local preview**: `npx wrangler dev --port 8788` (from this repo).
+- **Local preview**: `npx wrangler dev --port 8788` (from this repo). There is
+  no `package.json` — `npx` fetches wrangler on demand (verified on 4.127.1).
 - **Deploy**: `npx wrangler deploy`. Auth = `CLOUDFLARE_API_TOKEN` env
   (account "Ascendance Productions"). `account_id` is pinned in `wrangler.toml`
   (`a3fb626872474ce6d6d3a55829a760e7`) — **required**, else deploy 400s on
@@ -141,5 +166,9 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 - Product git history has commit-author email `ascendance@skate.fm` in the
   public repo (noted in prior sessions; history rewrite is prohibited — separate
   decision).
-- `spikes/xite-mall-fit/package.json` in the product repo still says
-  `UNLICENSED` (internal throwaway spike; intentionally left out of PR #1).
+- `spikes/xite-mall-fit/package.json` in the product repo: was left `UNLICENSED`
+  during the MIT lane; the GPL relicense commit `2eb7c39e` touched it — check
+  there, not here, if it matters.
+- Two **pre-existing** console errors on the landing page (baseline, unrelated to
+  licensing): `<line> attribute x1/x2: Expected length, "20,18"` from a generated
+  SVG in `worker.js`. Present before and after OSS-2; not fixed in that lane.

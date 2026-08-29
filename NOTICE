@@ -1,25 +1,154 @@
-Third-party asset notice
-=========================
+NOTICE — licensing, third-party components, and featured artwork
+=================================================================
 
-This repository's code is MIT licensed (see LICENSE). The following assets
-are excluded from that license — they are third-party creative work, used
-with the original artist's explicit permission, and are NOT open-licensed:
+This file is the authoritative rights record for this repository. It exists
+because a single LICENSE file cannot describe everything shipped here.
 
-  public/harley.wrl
-  public/hero-harley.wrl
-  public/hog1.jpg
+Read it as three separate things:
+
+  1. WRL Forge's own website code  — GPL-3.0-or-later (see LICENSE)
+  2. Third-party components         — their own upstream licenses, unchanged
+  3. Featured artwork               — the artist's copyright, NOT open-licensed
+
+
+1. WRL Forge website code
+-------------------------
+
+Copyright (C) 2026 Ryan Bundy (BassMekanik2000) and contributors.
+
+The original website code in this repository — `worker.js` (the Cloudflare
+Worker: page rendering, inline CSS, generated SVG scenes, release resolution
+and download UI), `wrangler.toml`, `public/hero-harley.wrl` (the original
+hero wrapper scene: framing, lighting, animation, re-centering), and the
+repository's own documentation — is free software licensed under the GNU
+General Public License, version 3 or later ("GPL-3.0-or-later"). The full
+canonical GPLv3 text is in LICENSE; the "or later" election is stated here
+and in README.md.
+
+This matches the WRL Forge product, which is GPL-3.0-or-later as of
+DJAscendance/wrlforge commit 2eb7c39e7ffd6b830155c4ee3d9b2dc8cb6aab1d.
+
+The GPL applies to this project's *software*. It does not, and cannot,
+change the rights in anything below.
+
+
+2. Featured artwork — "the Red Raven" by LSS
+--------------------------------------------
+
+  public/harley.wrl        — LSS's model geometry
+  public/hog1.jpg          — LSS's texture
 
 "the Red Raven" (c) 2003 LSS. Made by LSS in May 2003 for Cybertown
 (internal VRML title: "HOG!"). Provided directly to Ryan Bundy and used,
 with LSS's permission, as the live hero scene on wrlforge.com, rendered
 client-side by X_ITE.
 
-Permission covers display on wrlforge.com only. These files are NOT
-licensed for reuse, redistribution, modification, or incorporation into
-other projects or sites. All rights to the original model and texture
-remain with LSS. If you'd like to use this work, contact LSS directly:
+**LSS retains all copyright in this work.** To be unmistakable about what
+that means:
+
+  * These files are third-party creative work. They are not WRL Forge's.
+  * They are **NOT** covered by the GPL-3.0-or-later license in LICENSE.
+    That license covers WRL Forge's software only. Nothing about this
+    project's software being free software makes this artwork free.
+  * They are **NOT** open-licensed, public domain, or GPL by association,
+    proximity, aggregation, or inclusion in a GPL-licensed repository.
+  * Permission granted by LSS covers **display on wrlforge.com only**.
+  * These files are **NOT** licensed for reuse, redistribution,
+    modification, sublicensing, or incorporation into other projects,
+    sites, models, or datasets — including AI training corpora.
+  * You may **not** infer any reuse or redistribution permission from this
+    repository's GPL license, from its public visibility, or from the files
+    being served publicly by the site.
+  * All rights to the original model and texture remain with LSS.
+
+`public/hero-harley.wrl` is WRL Forge's own wrapper scene and is GPL-3.0-or-later
+(see §1), but it `Inline`s LSS's `harley.wrl`. Wrapping her work does not
+relicense it: the inlined model and its texture remain LSS's under the terms
+above, and the wrapper is only usable against them where LSS's permission
+applies.
+
+If you'd like to use this work, contact LSS directly:
 https://lss3d.silver-hosting.com/index.php?op=worlds
 
-All other third-party library assets vendored in this repository (e.g. the
-X_ITE runtime under public/x_ite* and public/assets/) remain under their
-own respective upstream licenses — see https://create3000.github.io/x_ite/
+Attribution to LSS is displayed in the site footer with a link to her worlds
+site, and must remain there.
+
+
+3. Featured artwork policy (general)
+------------------------------------
+
+Featured VRML artwork and other creative content shown by this site is
+legally separate from the software license. Artists retain copyright in
+their artwork. Featured art does not become GPL merely because WRL Forge's
+code is GPL. Each featured work is used only within the permission its
+creator actually granted — that permission is recorded here, per work, and
+is not broadened by silence. WRL Forge does not claim ownership or
+redistribution rights it has not been given.
+
+
+4. Third-party components vendored in this repository
+-----------------------------------------------------
+
+These retain their own copyright and licenses, unchanged. Nothing below is
+WRL Forge-authored, and nothing below is relicensed under the GPL by being
+distributed here.
+
+### X_ITE — v15.1.10 (MIT)
+
+  public/x_ite.min.js
+  public/x_ite.css
+  public/assets/**   (component chunks, images, fonts, hatching, linetype,
+                      and the WASM/LUT helper files under assets/lib/)
+
+X_ITE X3D Browser — https://create3000.github.io/x_ite/ — is the same
+renderer the WRL Forge product uses, vendored here so the site serves it
+self-hosted (house rule: no CDN). Upstream package metadata declares
+`"license": "MIT"`. Its license text follows in full:
+
+    The MIT License (MIT)
+
+    Copyright (c) 2009 Holger Seelig and other contributors
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### Fonts bundled inside the X_ITE distribution
+
+Shipped by X_ITE under `public/assets/fonts/`, each with its upstream
+license file retained beside it:
+
+  Droid Serif    — Apache License 2.0
+                   public/assets/fonts/Droid/DroidSerif Apache License.txt
+  PT Sans        — SIL Open Font License 1.1
+                   (c) 2010 ParaType Ltd., reserved names "PT Sans", "ParaType"
+                   public/assets/fonts/PT_Sans/OFL.txt
+  Ubuntu / Ubuntu Mono — Ubuntu Font Licence 1.0
+                   public/assets/fonts/Ubuntu/Ubuntu LICENCE.txt
+
+Do not remove those license files; they must ship with the fonts.
+
+### Other assets inside the X_ITE distribution
+
+`public/assets/lib/` contains helper binaries and lookup-table images that
+X_ITE redistributes from upstream projects. X_ITE's own provenance record
+for them is retained verbatim at `public/assets/lib/README.md`, which names
+the sources (Khronos glTF-Sample-Viewer, Khronos KTX-Software, Google Draco,
+meshoptimizer, GaussianSplats3D). Those components are redistributed here
+exactly as X_ITE ships them, under their own upstream terms; WRL Forge makes
+no additional claim over them.

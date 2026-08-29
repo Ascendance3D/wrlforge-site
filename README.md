@@ -24,8 +24,23 @@ Routes and the custom domain binding live in `wrangler.toml`.
 
 ## License
 
-Code in this repository is MIT licensed — see [LICENSE](LICENSE).
+`Copyright © 2026 Ryan Bundy (BassMekanik2000) and contributors.`
 
-The hero model (`public/harley.wrl`, `public/hero-harley.wrl`,
-`public/hog1.jpg`) is third-party art used with permission and is **not**
-covered by that license — see [NOTICE](NOTICE) for details and attribution.
+Original website code in this repository is **free software** under the **GNU
+General Public License, version 3 or later** (`GPL-3.0-or-later`) — see
+[LICENSE](LICENSE). This matches the WRL Forge product, which is
+`GPL-3.0-or-later`.
+
+Third-party components keep their own copyright and licenses — the vendored
+X_ITE runtime under `public/` is MIT, and its bundled fonts are Apache-2.0 /
+OFL-1.1 / Ubuntu Font Licence. See [NOTICE](NOTICE).
+
+The hero artwork — **“the Red Raven” © 2003 LSS** (`public/harley.wrl`,
+`public/hog1.jpg`) — is third-party creative work used with LSS's permission
+for display on wrlforge.com. LSS retains copyright. It is **not** covered by
+the GPL site-code license and is **not** open-licensed; see [NOTICE](NOTICE)
+for the exact terms and attribution.
+
+Contributions are welcome under `GPL-3.0-or-later` with a DCO sign-off
+(`git commit -s`) — no CLA, no copyright assignment. See
+[CONTRIBUTING.md](CONTRIBUTING.md).

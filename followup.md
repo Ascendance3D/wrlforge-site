@@ -1,3 +1,26 @@
+> # ⛔ SUPERSEDED — HISTORICAL RECORD ONLY. DO NOT FOLLOW.
+>
+> **This file records the July 2026 transition and is kept for history.**
+>
+> - The **MIT instructions below are historical and must NOT be followed.**
+>   Both §1 (flip the footer to MIT) and §2 (Red Raven rename) were completed and
+>   deployed on 2026-07-16, and the MIT decision itself has since been **reversed**.
+> - **WRL Forge — product and site alike — is now `GPL-3.0-or-later`.** The product
+>   relicensed at `DJAscendance/wrlforge` commit
+>   `2eb7c39e7ffd6b830155c4ee3d9b2dc8cb6aab1d`; the site was aligned to match
+>   (lane OSS-2). Anything below that says "MIT" describes a state that no longer
+>   exists.
+> - **Current authority is [`README.md`](README.md), [`LICENSE`](LICENSE),
+>   [`NOTICE`](NOTICE), [`CONTRIBUTING.md`](CONTRIBUTING.md), and
+>   [`HANDOFF.md`](HANDOFF.md)** — not this file.
+> - The only part of this file still live is **§3, the Acknowledgements +
+>   Remembrance page**, which is still open and still blocked on the owner
+>   supplying the names and remembrance content.
+> - The "Still parked" note about the repo being **private** is also stale — the
+>   repo has been **public** since 2026-07-16.
+
+---
+
 # Follow-up — later today (2026-07-15)
 
 Written after: Phase 3 (live X_ITE Harley) shipped to wrlforge.com, private
@@ -6,7 +29,7 @@ Take the nap first. These are the two things left.
 
 ---
 
-## 1. Site footer → flip to MIT (small, but needs a redeploy)
+## 1. ~~Site footer → flip to MIT~~ — DONE 2026-07-16, then SUPERSEDED by GPLv3+
 
 Now that `DJAscendance/wrlforge` `main` is **MIT** (PR #1 merged
 2026-07-15T14:06Z), the site can say so. Until this is done the footer is
@@ -36,7 +59,7 @@ the repo's LICENSE or say "MIT" somewhere, if you want to advertise it louder.
 
 ---
 
-## 2. Rename the hero model → "the Red Raven" (by LSS)
+## 2. ~~Rename the hero model → "the Red Raven" (by LSS)~~ — DONE 2026-07-16
 
 The bike is titled "HOG!" internally (its `WorldInfo`), but LSS's name for it is
 **"the Red Raven"** — that's what the site should say. Update the footer credit:
@@ -52,7 +75,7 @@ The bike is titled "HOG!" internally (its `WorldInfo`), but LSS's name for it is
 
 ---
 
-## 3. Acknowledgements + Remembrance page (the big one — do this rested)
+## 3. Acknowledgements + Remembrance page — **STILL OPEN** (the big one)
 
 You have **~20–30 people** to thank, plus a **remembrance for those we've lost**.
 This deserves a real page, not a footer line. Deferred on purpose.
@@ -83,7 +106,7 @@ This deserves a real page, not a footer line. Deferred on purpose.
 ---
 
 ## Still parked (no deadline)
-- **GitHub remote is private** (`DJAscendance/wrlforge-site`). Flip to public
-  whenever you want it out in the open.
+- ~~**GitHub remote is private** (`DJAscendance/wrlforge-site`). Flip to public
+  whenever you want it out in the open.~~ — DONE 2026-07-16, repo is **public**.
 - `worker.js` has a dead `wireGlobe()` function (all globes use `spinningGlobe`
   now) — safe to delete on the next edit.

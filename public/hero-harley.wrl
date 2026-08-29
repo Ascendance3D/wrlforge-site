@@ -7,9 +7,10 @@
 #
 # The model file (harley.wrl) and its texture (hog1.jpg) are LSS's, used
 # with permission on wrlforge.com only. Not licensed for reuse,
-# redistribution, or modification. See /NOTICE. This wrapper file (the
-# framing, lighting, animation, and re-centering below) is original and
-# MIT licensed along with the rest of this repo.
+# redistribution, or modification, and NOT covered by this repo's GPL
+# license. See /NOTICE. This wrapper file (the framing, lighting,
+# animation, and re-centering below) is original WRL Forge work, licensed
+# GPL-3.0-or-later along with the rest of this repo's own code.
 
 Background { transparency 1 }
 NavigationInfo { type "NONE" headlight TRUE }
