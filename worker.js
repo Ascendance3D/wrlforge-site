@@ -25,6 +25,12 @@ function classifyAsset(asset) {
   if (n.endsWith(".tar.gz"))   return { ...base, platform: "linux", os: "Linux", kind: "Portable (tar.gz)", ext: "tar.gz" };
   if (n.endsWith(".deb"))      return { ...base, platform: "linux", os: "Linux", kind: "Debian package", ext: "deb" };
 
+  // macOS MUST be decided before the generic Windows .zip fallback below,
+  // otherwise WRL-Forge-<v>-mac-arm64.zip is mislabelled as a Windows build.
+  if (n.endsWith(".dmg")) return { ...base, platform: "mac", os: "macOS", kind: "Disk Image", ext: "dmg" };
+  if (n.endsWith(".zip") && /(^|[-_.])(mac|macos|osx|darwin)([-_.]|$)/.test(n.slice(0, -4)))
+    return { ...base, platform: "mac", os: "macOS", kind: "Portable (zip)", ext: "zip" };
+
   if (n.endsWith(".msi"))                            return { ...base, platform: "windows", os: "Windows", kind: "MSI installer", ext: "msi" };
   if (n.endsWith(".zip"))                            return { ...base, platform: "windows", os: "Windows", kind: "Portable (zip)", ext: "zip" };
   if (n.includes("portable") && n.endsWith(".exe")) return { ...base, platform: "windows", os: "Windows", kind: "Portable (exe)", ext: "exe" };
@@ -43,6 +49,7 @@ async function resolveReleaseModel() {
     assets: [],
     checksumsUrl: null,
     heroWindows: null,
+    heroMac: null,
     heroLinux: null,
   };
 
@@ -71,16 +78,18 @@ async function resolveReleaseModel() {
 
     for (const a of classified) {
       if (a.platform === "checksums") { model.checksumsUrl = a.url; continue; }
-      if (a.platform === "windows" || a.platform === "linux") model.assets.push(a);
+      if (a.platform === "windows" || a.platform === "mac" || a.platform === "linux") model.assets.push(a);
     }
 
     const byKind = (arr, kinds) => kinds.map(k => arr.find(a => a.kind === k)).find(Boolean);
     const win = model.assets.filter(a => a.platform === "windows");
+    const mac = model.assets.filter(a => a.platform === "mac");
     const lin = model.assets.filter(a => a.platform === "linux");
     model.heroWindows = byKind(win, ["Installer (Setup)", "MSI installer", "Portable (exe)", "Portable (zip)"]) || win[0] || null;
+    model.heroMac     = byKind(mac, ["Disk Image", "Portable (zip)"]) || mac[0] || null;
     model.heroLinux   = byKind(lin, ["AppImage", "Portable (tar.gz)", "Debian package"]) || lin[0] || null;
 
-    const order = { windows: 0, linux: 1 };
+    const order = { windows: 0, mac: 1, linux: 2 };
     model.assets.sort((a, b) => (order[a.platform] - order[b.platform]) || a.name.localeCompare(b.name));
   } catch (e) {
     // Silent fallback to defaults above.
@@ -275,16 +284,34 @@ function axisGizmo() {
 
 // ---- download UI -----------------------------------------------------------
 
-function heroButton(asset, os, label, cls) {
+// Self-hosted OS marks (house rule: no CDN). Purely decorative — the platform
+// name is always present as adjacent text, so the icons carry alt="" and are
+// hidden from assistive tech rather than repeating the label.
+const OS_ICONS = {
+  windows: "icons8-windows-11",
+  mac:     "icons8-mac-client",
+  linux:   "icons8-linux",
+};
+
+function osIcon(platform, px, cls) {
+  const stem = OS_ICONS[platform];
+  if (!stem) return "";
+  return `<img class="${cls}" src="/os-icons/${stem}-30.png"` +
+    ` srcset="/os-icons/${stem}-30.png 1x, /os-icons/${stem}-60.png 2x, /os-icons/${stem}-90.png 3x"` +
+    ` width="${px}" height="${px}" alt="" aria-hidden="true" decoding="async">`;
+}
+
+function heroButton(asset, platform, os, label, cls) {
+  const mark = osIcon(platform, 26, "btn-ico");
   if (!asset) {
     return `<a href="${RELEASES_PAGE}" class="btn ${cls}">
       <span class="btn-os">${esc(os)}</span>
-      <span class="btn-title">${esc(label)}</span>
+      <span class="btn-title">${mark}<span>${esc(label)}</span></span>
       <span class="btn-sub">see all releases</span></a>`;
   }
   return `<a href="${esc(asset.url)}" class="btn ${cls}">
     <span class="btn-os">${esc(os)}</span>
-    <span class="btn-title">${esc(label)}</span>
+    <span class="btn-title">${mark}<span>${esc(label)}</span></span>
     <span class="btn-sub">${esc(asset.kind)} &middot; ${esc(asset.sizeLabel)}</span></a>`;
 }
 
@@ -292,7 +319,7 @@ function downloadsList(model) {
   if (!model.assets.length) return "";
   const rows = model.assets.map(a => `
     <li class="dl-row"><a href="${esc(a.url)}">
-      <span class="dl-os">${esc(a.os)}</span>
+      <span class="dl-os">${osIcon(a.platform, 16, "dl-ico")}<span>${esc(a.os)}</span></span>
       <span class="dl-kind">${esc(a.kind)}</span>
       <span class="dl-size">${esc(a.sizeLabel)}</span></a></li>`).join("");
   const checksums = model.checksumsUrl
@@ -312,16 +339,16 @@ function renderPage(model) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WRL Forge — Build. Preview. Validate. Package.</title>
+<title>WRL Forge — a VRML editor for the 3D web that time forgot</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPgogIDwhLS0gZmxhdCBiYW5kZWQgdmlvbGV0IGJhY2tncm91bmQsIG5vIHNtb290aCBncmFkaWVudHMgLS0+CgogIDwhLS0gZ3JvdW5kIHNoYWRvdzogaGFyZCBmbGF0IHNpbGhvdWV0dGUsIG5vIGJsdXIgLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAsMTIpIiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBmaWxsPSJub25lIiBzdHJva2U9IiMwNTAzMDkiPgogICAgPHBvbHlsaW5lIHBvaW50cz0iNzAsMTYwIDEwNSwzNjAgMTUwLDI1MCAxOTUsMzYwIDIzMCwxNjAiIHN0cm9rZS13aWR0aD0iNDAiLz4KICAgIDxwb2x5bGluZSBwb2ludHM9IjI1NSwxNjAgMjU1LDM2MCIgc3Ryb2tlLXdpZHRoPSI0MCIvPgogICAgPHBvbHlsaW5lIHBvaW50cz0iMjU1LDE2MCAzMTUsMTYwIDMyNSwxOTUgMjU1LDIwNSIgc3Ryb2tlLXdpZHRoPSIzNCIvPgogICAgPHBvbHlsaW5lIHBvaW50cz0iMjcyLDIwNSAzMzUsMzYwIiBzdHJva2Utd2lkdGg9IjM2Ii8+CiAgICA8cG9seWxpbmUgcG9pbnRzPSIzNjUsMTYwIDM2NSwzNjAgNDQwLDM2MCIgc3Ryb2tlLXdpZHRoPSI0MCIvPgogIDwvZz4KCiAgPCEtLSBleHRydXNpb24gYmFzZSAoc2hhZG93IGZhY2UsIG9mZnNldCBkb3duLXJpZ2h0KSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5LDkpIiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBmaWxsPSJub25lIiBzdHJva2U9IiMxMzQwNWMiPgogICAgPHBvbHlsaW5lIHBvaW50cz0iNzAsMTYwIDEwNSwzNjAgMTUwLDI1MCAxOTUsMzYwIDIzMCwxNjAiIHN0cm9rZS13aWR0aD0iMzgiLz4KICAgIDxwb2x5bGluZSBwb2ludHM9IjI1NSwxNjAgMjU1LDM2MCIgc3Ryb2tlLXdpZHRoPSIzOCIvPgogICAgPHBvbHlsaW5lIHBvaW50cz0iMjU1LDE2MCAzMTUsMTYwIDMyNSwxOTUgMjU1LDIwNSIgc3Ryb2tlLXdpZHRoPSIzMiIvPgogICAgPHBvbHlsaW5lIHBvaW50cz0iMjcyLDIwNSAzMzUsMzYwIiBzdHJva2Utd2lkdGg9IjM0Ii8+CiAgICA8cG9seWxpbmUgcG9pbnRzPSIzNjUsMTYwIDM2NSwzNjAgNDQwLDM2MCIgc3Ryb2tlLXdpZHRoPSIzOCIvPgogIDwvZz4KCiAgPCEtLSBtYWluIGZhY2UgKG1pZCBhbWJlciwgbm8gb2Zmc2V0KSAtLT4KICA8ZyBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBmaWxsPSJub25lIiBzdHJva2U9IiMyZjlmYzkiPgogICAgPHBvbHlsaW5lIHBvaW50cz0iNzAsMTYwIDEwNSwzNjAgMTUwLDI1MCAxOTUsMzYwIDIzMCwxNjAiIHN0cm9rZS13aWR0aD0iMzgiLz4KICAgIDxwb2x5bGluZSBwb2ludHM9IjI1NSwxNjAgMjU1LDM2MCIgc3Ryb2tlLXdpZHRoPSIzOCIvPgogICAgPHBvbHlsaW5lIHBvaW50cz0iMjU1LDE2MCAzMTUsMTYwIDMyNSwxOTUgMjU1LDIwNSIgc3Ryb2tlLXdpZHRoPSIzMiIvPgogICAgPHBvbHlsaW5lIHBvaW50cz0iMjcyLDIwNSAzMzUsMzYwIiBzdHJva2Utd2lkdGg9IjM0Ii8+CiAgICA8cG9seWxpbmUgcG9pbnRzPSIzNjUsMTYwIDM2NSwzNjAgNDQwLDM2MCIgc3Ryb2tlLXdpZHRoPSIzOCIvPgogIDwvZz4KPC9zdmc+Cg==">
 <meta property="og:title" content="WRL Forge">
-<meta property="og:description" content="Build. Preview. Validate. Package. Welcome to the 3D platform builders love.">
+<meta property="og:description" content="Hand-write VRML and watch it render live. Package worlds that Cybertown will actually load. Runs offline on Windows, macOS and Linux.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wrlforge.com">
 <meta property="og:image" content="https://raw.githubusercontent.com/DJAscendance/wrlforge/main/assets/generated/icons/runtime/icon.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WRL Forge">
-<meta name="twitter:description" content="Build. Preview. Validate. Package. Welcome to the 3D platform builders love.">
+<meta name="twitter:description" content="Hand-write VRML and watch it render live. Package worlds that Cybertown will actually load. Runs offline on Windows, macOS and Linux.">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/DJAscendance/wrlforge/main/assets/generated/icons/runtime/icon.png">
 <style>
 :root{
@@ -408,21 +435,25 @@ h1 .vrml{color:var(--amber);text-shadow:0 0 26px rgba(255,178,60,.55)}
 
 /* download panel — framed like a viewport window */
 .dl-panel{border:1px solid var(--wire);border-radius:10px;background:linear-gradient(180deg,rgba(28,18,56,.55),rgba(10,6,24,.7));
-  backdrop-filter:blur(6px);padding:20px;max-width:660px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  backdrop-filter:blur(6px);padding:20px;max-width:760px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .dl-panel .bar{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);
   display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--wire);margin-bottom:16px}
 .dl-panel .bar .tag{color:var(--amber)}
 .actions{display:flex;gap:14px;flex-wrap:wrap}
-.btn{flex:1 1 220px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;
-  align-items:center;padding:14px 18px;border-radius:8px;text-decoration:none;transition:.25s;position:relative}
+.btn{flex:1 1 auto;min-width:190px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;
+  align-items:center;padding:14px 16px;border-radius:8px;text-decoration:none;transition:.25s;position:relative}
 .btn-os{grid-row:1/3;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;
   writing-mode:vertical-rl;transform:rotate(180deg);opacity:.55;text-transform:uppercase}
-.btn-title{font-weight:700;font-size:1.08rem}
+.btn-secondary .btn-os{opacity:.8}
+.btn-title{font-weight:700;font-size:1.08rem;display:flex;align-items:center;gap:9px}
+.btn-ico{flex:0 0 auto;display:block;width:26px;height:26px}
+.btn-secondary .btn-ico{filter:invert(1)}
 .btn-sub{font-family:var(--mono);font-size:.78rem;opacity:.8}
 .btn-primary{background:var(--ice);color:#071018;box-shadow:0 6px 22px rgba(159,232,255,.28)}
 .btn-primary:hover{background:#fff;transform:translateY(-2px);box-shadow:0 10px 30px rgba(159,232,255,.45)}
-.btn-secondary{background:rgba(47,159,201,.1);color:#fff;border:1px solid rgba(159,232,255,.4)}
-.btn-secondary:hover{background:rgba(47,159,201,.22);border-color:var(--ice);transform:translateY(-2px)}
+.btn-secondary{background:rgba(47,159,201,.22);color:#fff;border:1px solid rgba(159,232,255,.72)}
+.btn-secondary .btn-sub{opacity:.95}
+.btn-secondary:hover{background:rgba(47,159,201,.36);border-color:#fff;transform:translateY(-2px)}
 
 .all-downloads{margin-top:16px;font-family:var(--mono)}
 .all-downloads summary{cursor:pointer;color:var(--ice);font-size:.85rem;letter-spacing:.5px;list-style:none;padding:6px 2px}
@@ -431,11 +462,13 @@ h1 .vrml{color:var(--amber);text-shadow:0 0 26px rgba(255,178,60,.55)}
 .all-downloads summary .tw{color:var(--amber)} .all-downloads .dim{color:var(--muted)}
 .all-downloads[open] summary .tw::after{content:""}
 .dl-list{list-style:none;margin-top:12px;border:1px solid var(--wire);border-radius:6px;overflow:hidden}
-.dl-row a{display:grid;grid-template-columns:84px 1fr auto;gap:14px;align-items:center;padding:11px 16px;
+.dl-row a{display:grid;grid-template-columns:104px 1fr auto;gap:14px;align-items:center;padding:11px 16px;
   text-decoration:none;color:#fff;border-bottom:1px solid rgba(47,159,201,.16);transition:.2s;font-size:.86rem}
 .dl-list .dl-row:last-child a{border-bottom:none}
 .dl-row a:hover{background:rgba(47,159,201,.12)}
-.dl-os{color:var(--ice)} .dl-kind{color:var(--muted)} .dl-size{color:#fff;opacity:.85;font-variant-numeric:tabular-nums}
+.dl-os{color:var(--ice);display:flex;align-items:center;gap:8px}
+.dl-ico{flex:0 0 auto;display:block;width:16px;height:16px;filter:invert(1);opacity:.9}
+.dl-kind{color:var(--muted)} .dl-size{color:#fff;opacity:.85;font-variant-numeric:tabular-nums}
 .dl-checksums{display:inline-block;margin-top:12px;color:var(--cyan);font-size:.8rem;text-decoration:none;letter-spacing:.5px}
 .dl-checksums:hover{color:var(--ice)}
 
@@ -504,13 +537,15 @@ footer .credit a{color:var(--amber)} footer .credit a:hover{color:var(--ice)}
 
 /* responsive */
 @media(max-width:1219px){ .palette{display:none} }
+@media(max-width:900px){ .actions .btn{flex:1 1 100%;min-width:0} }
 @media(max-width:760px){
   nav{flex-wrap:wrap;gap:10px;padding:14px 18px}
   .vp-status{display:none}
   .hero{padding:44px 18px 24px} .powered{padding:30px 18px}
   .planet.p-ring{width:200px;opacity:.5} .planet.p-cyan,.planet.p-mag{opacity:.5}
-  .btn{flex:1 1 100%}
-  .dl-row a{grid-template-columns:64px 1fr auto;gap:8px}
+  .btn{flex:1 1 100%;min-width:0}
+  .dl-row a{grid-template-columns:86px 1fr auto;gap:8px}
+  .dl-os{gap:6px} .dl-ico{width:14px;height:14px}
   footer{flex-direction:column}
   .gizmo{display:none}
 }
@@ -563,18 +598,19 @@ ${axisGizmo()}
     <h1>Build your own <span class="vrml">reality</span>.</h1>
     <p class="lede">
       The markdown editor for the 3D web that time forgot. Hand-write <b>VRML</b>,
-      watch it render live, validate every node, and package worlds for <b>Cybertown</b>
-      that actually load — offline, no upload, no nonsense.
+      watch it render as you type, and let the validator catch what <b>Cybertown</b>
+      would reject on upload. Nothing leaves your machine.
     </p>
     <div class="features">
-      <span>◈ live 3D preview</span><span>◈ syntax &amp; validation</span><span>◈ one-click packaging</span>
+      <span>◈ live 3D preview</span><span>◈ syntax &amp; node validation</span><span>◈ packaging for Cybertown</span>
     </div>
 
     <div class="dl-panel">
       <div class="bar"><span>DOWNLOAD // ${version}</span><span class="tag">${chan}</span></div>
       <div class="actions">
-        ${heroButton(model.heroWindows, "WIN", "Download for Windows", "btn-primary")}
-        ${heroButton(model.heroLinux, "LNX", "Download for Linux", "btn-secondary")}
+        ${heroButton(model.heroWindows, "windows", "WIN", "Windows", "btn-primary")}
+        ${heroButton(model.heroMac, "mac", "MAC", "macOS", "btn-secondary")}
+        ${heroButton(model.heroLinux, "linux", "LNX", "Linux", "btn-secondary")}
       </div>
       ${downloadsList(model)}
     </div>
