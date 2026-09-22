@@ -8,6 +8,22 @@ release (prereleases **included** — the product currently ships beta
 prereleases, which the `/releases/latest` endpoint hides). Download links and
 file sizes come live from the GitHub API, so they never go stale.
 
+## Platforms
+
+Three platforms are offered: **Windows**, **macOS**, **Linux** — in that display
+order, in both the hero download panel and the "all downloads" list.
+
+`classifyAsset()` maps a GitHub release asset name to a platform. macOS is
+matched **before** the generic Windows `.zip` fallback, so
+`WRL-Forge-<version>-mac-arm64.zip` is labelled macOS and not Windows; `.dmg`
+is matched as macOS too.
+
+The OS marks live in `public/os-icons/` (self-hosted, no CDN), copied byte-for-
+byte from the product repo's `assets/os-icons/`. Each platform ships 30/60/90 px
+variants wired through `srcset` for high-DPI screens. They are decorative only
+(`alt=""`, `aria-hidden="true"`) — the platform name is always present as text,
+so the icons are never the sole indicator.
+
 ## Develop
 
 ```sh

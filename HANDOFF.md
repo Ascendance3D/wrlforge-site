@@ -55,6 +55,34 @@ follow its MIT instructions.
   (X_ITE→create3000.github.io/x_ite, VSCodium, CodeMirror, Electron, Node.js).
   Footer: `© 2026 WRL Forge · by Ryan Bundy (aka BassMekanik2000)`.
 
+- **Phase 3 (1.4.0 prep)**: three-platform downloads. WRL Forge 1.4.0 adds macOS
+  artifacts (`.dmg` + `-mac-arm64.zip`), and the old classifier treated **any**
+  `.zip` as Windows — so the Mac ZIP would have shipped mislabelled. Fixed in
+  `classifyAsset()` by matching `.dmg` and Mac-tagged `.zip` **before** the
+  generic Windows `.zip` rule. `resolveReleaseModel()` gained `heroMac` and
+  includes `mac` in `model.assets`; display order is `windows, mac, linux`.
+  The hero panel now shows three platform buttons (Windows / macOS / Linux) and
+  every download row carries its OS mark. Checksum handling and prerelease
+  support are unchanged. When a release has no Mac asset (e.g. `v1.3.0-beta.5`)
+  the macOS button degrades to "see all releases" rather than disappearing.
+
+## OS icons (`public/os-icons/`)
+
+Copied byte-for-byte from the **product** repo `assets/os-icons/` — that is the
+approved source; do not edit the copies here, re-copy instead. Nine files:
+`icons8-windows-11-{30,60,90}.png`, `icons8-mac-client-{30,60,90}.png`,
+`icons8-linux-{30,60,90}.png`. Served as static assets at `/os-icons/...`
+(no CDN), wired through `srcset` (30 = 1x, 60 = 2x, 90 = 3x).
+
+They are **solid black glyphs**. That reads fine on the ice-coloured primary
+button but is invisible on the dark secondary buttons and download rows, so
+those are inverted in CSS (`filter:invert(1)`) rather than by editing the PNGs —
+the bytes stay identical to the product copies.
+
+Accessibility: icons are decorative (`alt=""`, `aria-hidden="true"`); the
+platform name is always rendered as adjacent text, so an icon is never the only
+platform indicator.
+
 ## License situation (important, don't get this wrong)
 
 **Current, as of 2026-08-29 — this supersedes everything earlier:**
@@ -155,8 +183,12 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
   `ringedPlanet(px)` (2-ring alternating-facet gem), `gridFloor()`,
   `primitiveIcon(kind)`, `axisGizmo()`. NOTE: `wireGlobe()` is now **dead code**
   (all globes use `spinningGlobe`) — safe to delete on next edit.
-- Download UI: `heroButton`, `downloadsList`. Page: `renderPage`. Entry: default
-  `fetch` handler.
+- Download UI: `osIcon(platform, px, cls)` (+ the `OS_ICONS` stem map),
+  `heroButton(asset, platform, os, label, cls)`, `downloadsList`. Page:
+  `renderPage`. Entry: default `fetch` handler.
+- Hero buttons are content-sized (`flex:1 1 auto`) and sit three-across above
+  900px; `@media(max-width:900px)` stacks them full width, so the row never
+  degrades into a 2 + 1 orphan at tablet widths.
 - CSS is one inline `<style>`; motion is gated in
   `@media(prefers-reduced-motion:no-preference)`. Globe spin = `merspin`
   keyframe (meridians fade to 0 opacity edge-on so there's no centre line) +
