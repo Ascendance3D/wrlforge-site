@@ -1,4 +1,4 @@
-# WRL Forge site — session handoff (updated 2026-08-29)
+# WRL Forge site — session handoff (updated 2026-09-26)
 
 Working notes so the next session resumes **exactly** here. Owner: Ryan Bundy
 (aka **BassMekanik2000**). Owner works in staged phases and wants a STOP +
@@ -11,8 +11,8 @@ wrlforge.com** (Phases 1, 2, 3 and 3.5 all done and deployed).
 
 **Repo truth:**
 
-- Repository: `DJAscendance/wrlforge-site` — **public** since 2026-07-16.
-- Remote: `origin` → https://github.com/DJAscendance/wrlforge-site.git
+- Repository: `Ascendance3D/wrlforge-site` — **public** since 2026-07-16.
+- Remote: `origin` → https://github.com/Ascendance3D/wrlforge-site.git
 - Default branch: **`master`**; `origin/master` tracking.
 - No secrets in the repo (the Cloudflare token stays in the shell env).
 
@@ -36,7 +36,7 @@ follow its MIT instructions.
 
 - **Repo**: this one — `/home/ryan/Projects/cybertown/wrlforge-site` (separate
   from the product repo; promoted out of the product repo's untracked `site/`).
-  Public on GitHub as `DJAscendance/wrlforge-site`, `origin/master` tracking.
+  Public on GitHub as `Ascendance3D/wrlforge-site`, `origin/master` tracking.
 - **Phase 1**: fixed the broken downloads. The Worker used `/releases/latest`
   which 404s because `v1.3.0-beta.2` is a **prerelease**; every download button
   was 404ing. Now queries `/releases?per_page=15` and takes the newest
@@ -87,7 +87,7 @@ platform indicator.
 
 **Current, as of 2026-08-29 — this supersedes everything earlier:**
 
-- The **product** `DJAscendance/wrlforge` is **`GPL-3.0-or-later`** as of commit
+- The **product** `Ascendance3D/wrlforge` is **`GPL-3.0-or-later`** as of commit
   `2eb7c39e7ffd6b830155c4ee3d9b2dc8cb6aab1d`
   ("chore: relicense WRLForge under GPL-3.0-or-later").
 - **This site's own code is `GPL-3.0-or-later` too** (lane OSS-2). `LICENSE` is
