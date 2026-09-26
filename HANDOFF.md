@@ -15,6 +15,11 @@ wrlforge.com** (Phases 1, 2, 3 and 3.5 all done and deployed).
 - Remote: `origin` → https://github.com/Ascendance3D/wrlforge-site.git
 - Default branch: **`master`**; `origin/master` tracking.
 - No secrets in the repo (the Cloudflare token stays in the shell env).
+- **Product repo migration is complete.** Release data now comes **only** from
+  `Ascendance3D/wrlforge` — the Worker makes a single canonical GitHub request.
+  The temporary `DJAscendance/wrlforge` fallback (`FALLBACK_REPO` /
+  `REPO_CANDIDATES`) has been **removed** from `worker.js`. The site repo stays
+  `Ascendance3D/wrlforge-site`.
 
 **Licensing truth (see "License situation" below — this changed):** both the
 product and this site are now **`GPL-3.0-or-later`**. The July 2026 MIT

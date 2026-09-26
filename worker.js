@@ -3,13 +3,9 @@
 // (prereleases INCLUDED — the product currently ships beta prereleases, which
 // the /releases/latest endpoint deliberately hides).
 
-// Repository migration: the product repo is moving DJAscendance -> Ascendance3D.
-// The canonical location is tried first; if GitHub reports it does not exist
-// yet (404 — the "transfer not done yet" case) we fall back to the old owner.
-// Any other API failure is a real error and is NOT a reason to fall back.
+// The product repo lives at a single canonical location. (The owner migration
+// is complete; the temporary old-owner fallback has been retired.)
 const CANONICAL_REPO = "Ascendance3D/wrlforge";
-const FALLBACK_REPO  = "DJAscendance/wrlforge";
-const REPO_CANDIDATES = [CANONICAL_REPO, FALLBACK_REPO];
 
 function repoLinks(repo) {
   return {
@@ -19,20 +15,18 @@ function repoLinks(repo) {
   };
 }
 
-// Fetch the release list from the first repo location that exists.
-// Returns { repo, releases } or { repo: CANONICAL_REPO, releases: null } when
-// neither location is present. Throws on non-404 API failures.
+// Fetch the release list from the canonical product repo.
+// Returns { repo, releases }, or { repo: CANONICAL_REPO, releases: null } when
+// the repo has no releases (404). Throws on any other API failure so a real
+// GitHub outage is surfaced rather than hidden.
 async function fetchReleases(fetchImpl = fetch) {
-  for (const repo of REPO_CANDIDATES) {
-    const res = await fetchImpl(`https://api.github.com/repos/${repo}/releases?per_page=15`, {
-      headers: { "User-Agent": "WRLForge-Site-Worker", "Accept": "application/vnd.github+json" },
-      cf: { cacheTtl: 300, cacheEverything: true },
-    });
-    if (res.ok) return { repo, releases: await res.json() };
-    if (res.status === 404) continue; // repo not at this location (yet)
-    throw new Error(`GitHub releases API returned ${res.status} for ${repo}`);
-  }
-  return { repo: CANONICAL_REPO, releases: null };
+  const res = await fetchImpl(`https://api.github.com/repos/${CANONICAL_REPO}/releases?per_page=15`, {
+    headers: { "User-Agent": "WRLForge-Site-Worker", "Accept": "application/vnd.github+json" },
+    cf: { cacheTtl: 300, cacheEverything: true },
+  });
+  if (res.ok) return { repo: CANONICAL_REPO, releases: await res.json() };
+  if (res.status === 404) return { repo: CANONICAL_REPO, releases: null };
+  throw new Error(`GitHub releases API returned ${res.status} for ${CANONICAL_REPO}`);
 }
 
 // ---- release data layer ----------------------------------------------------
@@ -730,4 +724,4 @@ export default {
 };
 
 // Exported for tests (worker runtime only uses the default export).
-export { CANONICAL_REPO, FALLBACK_REPO, repoLinks, fetchReleases, classifyAsset, resolveReleaseModel, renderPage };
+export { CANONICAL_REPO, repoLinks, fetchReleases, classifyAsset, resolveReleaseModel, renderPage };
