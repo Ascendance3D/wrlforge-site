@@ -3,8 +3,37 @@
 // (prereleases INCLUDED — the product currently ships beta prereleases, which
 // the /releases/latest endpoint deliberately hides).
 
-const REPO = "DJAscendance/wrlforge";
-const RELEASES_PAGE = "https://github.com/DJAscendance/wrlforge/releases";
+// Repository migration: the product repo is moving DJAscendance -> Ascendance3D.
+// The canonical location is tried first; if GitHub reports it does not exist
+// yet (404 — the "transfer not done yet" case) we fall back to the old owner.
+// Any other API failure is a real error and is NOT a reason to fall back.
+const CANONICAL_REPO = "Ascendance3D/wrlforge";
+const FALLBACK_REPO  = "DJAscendance/wrlforge";
+const REPO_CANDIDATES = [CANONICAL_REPO, FALLBACK_REPO];
+
+function repoLinks(repo) {
+  return {
+    repo: `https://github.com/${repo}`,
+    releases: `https://github.com/${repo}/releases`,
+    rawMain: `https://raw.githubusercontent.com/${repo}/main`,
+  };
+}
+
+// Fetch the release list from the first repo location that exists.
+// Returns { repo, releases } or { repo: CANONICAL_REPO, releases: null } when
+// neither location is present. Throws on non-404 API failures.
+async function fetchReleases(fetchImpl = fetch) {
+  for (const repo of REPO_CANDIDATES) {
+    const res = await fetchImpl(`https://api.github.com/repos/${repo}/releases?per_page=15`, {
+      headers: { "User-Agent": "WRLForge-Site-Worker", "Accept": "application/vnd.github+json" },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+    if (res.ok) return { repo, releases: await res.json() };
+    if (res.status === 404) continue; // repo not at this location (yet)
+    throw new Error(`GitHub releases API returned ${res.status} for ${repo}`);
+  }
+  return { repo: CANONICAL_REPO, releases: null };
+}
 
 // ---- release data layer ----------------------------------------------------
 
@@ -41,10 +70,12 @@ function classifyAsset(asset) {
   return base;
 }
 
-async function resolveReleaseModel() {
+async function resolveReleaseModel(fetchImpl = fetch) {
   const model = {
+    repo: CANONICAL_REPO,
+    links: repoLinks(CANONICAL_REPO),
     version: "latest",
-    releaseUrl: RELEASES_PAGE + "/latest",
+    releaseUrl: repoLinks(CANONICAL_REPO).releases + "/latest",
     prerelease: false,
     assets: [],
     checksumsUrl: null,
@@ -54,13 +85,12 @@ async function resolveReleaseModel() {
   };
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=15`, {
-      headers: { "User-Agent": "WRLForge-Site-Worker", "Accept": "application/vnd.github+json" },
-      cf: { cacheTtl: 300, cacheEverything: true },
-    });
-    if (!res.ok) return model;
+    const { repo, releases } = await fetchReleases(fetchImpl);
+    model.repo = repo;
+    model.links = repoLinks(repo);
+    model.releaseUrl = model.links.releases + "/latest";
+    if (!releases) return model;
 
-    const releases = await res.json();
     const rel = Array.isArray(releases) ? releases.find(r => r && !r.draft) : null;
     if (!rel) return model;
 
@@ -92,7 +122,9 @@ async function resolveReleaseModel() {
     const order = { windows: 0, mac: 1, linux: 2 };
     model.assets.sort((a, b) => (order[a.platform] - order[b.platform]) || a.name.localeCompare(b.name));
   } catch (e) {
-    // Silent fallback to defaults above.
+    // Real API/network failure: keep the page up with default links, but
+    // surface the error in Worker logs rather than hiding it.
+    console.error("release lookup failed:", e && e.message ? e.message : e);
   }
 
   return model;
@@ -301,10 +333,10 @@ function osIcon(platform, px, cls) {
     ` width="${px}" height="${px}" alt="" aria-hidden="true" decoding="async">`;
 }
 
-function heroButton(asset, platform, os, label, cls) {
+function heroButton(asset, platform, os, label, cls, releasesPage) {
   const mark = osIcon(platform, 26, "btn-ico");
   if (!asset) {
-    return `<a href="${RELEASES_PAGE}" class="btn ${cls}">
+    return `<a href="${esc(releasesPage)}" class="btn ${cls}">
       <span class="btn-os">${esc(os)}</span>
       <span class="btn-title">${mark}<span>${esc(label)}</span></span>
       <span class="btn-sub">see all releases</span></a>`;
@@ -334,6 +366,7 @@ function downloadsList(model) {
 function renderPage(model) {
   const version = esc(model.version);
   const chan = model.prerelease ? "PRE-RELEASE BETA" : "STABLE";
+  const links = model.links || repoLinks(CANONICAL_REPO);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -345,11 +378,11 @@ function renderPage(model) {
 <meta property="og:description" content="Hand-write VRML and watch it render live. Package worlds that Cybertown will actually load. Runs offline on Windows, macOS and Linux.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wrlforge.com">
-<meta property="og:image" content="https://raw.githubusercontent.com/DJAscendance/wrlforge/main/assets/generated/icons/runtime/icon.png">
+<meta property="og:image" content="${links.rawMain}/assets/generated/icons/runtime/icon.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WRL Forge">
 <meta name="twitter:description" content="Hand-write VRML and watch it render live. Package worlds that Cybertown will actually load. Runs offline on Windows, macOS and Linux.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/DJAscendance/wrlforge/main/assets/generated/icons/runtime/icon.png">
+<meta name="twitter:image" content="${links.rawMain}/assets/generated/icons/runtime/icon.png">
 <style>
 :root{
   --void:#0a0618; --deep:#150c2c; --deep2:#1c1238;
@@ -584,7 +617,7 @@ ${axisGizmo()}
     </div>
     <div class="nav-links">
       <a href="https://cybertownrevival.com" target="_blank" rel="noopener">Cybertown</a>
-      <a href="https://github.com/DJAscendance/wrlforge" target="_blank" rel="noopener">App Repository</a>
+      <a href="${links.repo}" target="_blank" rel="noopener">App Repository</a>
       <a href="https://opensource.org/osd" target="_blank" rel="noopener">Open Source</a>
     </div>
     <div class="vp-status">
@@ -608,9 +641,9 @@ ${axisGizmo()}
     <div class="dl-panel">
       <div class="bar"><span>DOWNLOAD // ${version}</span><span class="tag">${chan}</span></div>
       <div class="actions">
-        ${heroButton(model.heroWindows, "windows", "WIN", "Windows", "btn-primary")}
-        ${heroButton(model.heroMac, "mac", "MAC", "macOS", "btn-secondary")}
-        ${heroButton(model.heroLinux, "linux", "LNX", "Linux", "btn-secondary")}
+        ${heroButton(model.heroWindows, "windows", "WIN", "Windows", "btn-primary", model.links.releases)}
+        ${heroButton(model.heroMac, "mac", "MAC", "macOS", "btn-secondary", model.links.releases)}
+        ${heroButton(model.heroLinux, "linux", "LNX", "Linux", "btn-secondary", model.links.releases)}
       </div>
       ${downloadsList(model)}
     </div>
@@ -695,3 +728,6 @@ export default {
     });
   },
 };
+
+// Exported for tests (worker runtime only uses the default export).
+export { CANONICAL_REPO, FALLBACK_REPO, repoLinks, fetchReleases, classifyAsset, resolveReleaseModel, renderPage };
