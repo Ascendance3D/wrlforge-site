@@ -32,7 +32,6 @@ transition is **complete and superseded**.
    remembrance content; shape is sketched in `followup.md` §3. LSS is already
    credited in the footer with a link to
    https://lss3d.silver-hosting.com/index.php?op=worlds .
-2. **Dead `wireGlobe()`** in `worker.js` — safe to delete on the next edit.
 
 `followup.md` is **historical only** and carries a superseded banner; do not
 follow its MIT instructions.
@@ -186,8 +185,7 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
   (prerelease-aware), `esc`.
 - Scene generators (pure SVG): `spinningGlobe(px, {hue,tilt,rev,dur})`,
   `ringedPlanet(px)` (2-ring alternating-facet gem), `gridFloor()`,
-  `primitiveIcon(kind)`, `axisGizmo()`. NOTE: `wireGlobe()` is now **dead code**
-  (all globes use `spinningGlobe`) — safe to delete on next edit.
+  `primitiveIcon(kind)`, `axisGizmo()`.
 - Download UI: `osIcon(platform, px, cls)` (+ the `OS_ICONS` stem map),
   `heroButton(asset, platform, os, label, cls)`, `downloadsList`. Page:
   `renderPage`. Entry: default `fetch` handler.
