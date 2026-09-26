@@ -1,0 +1,9 @@
+{
+  "name": "wrlforge-site",
+  "private": true,
+  "type": "module",
+  "description": "WRL Forge marketing site (Cloudflare Worker). Tests only; deploy via wrangler.",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
