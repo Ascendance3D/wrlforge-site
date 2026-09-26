@@ -132,41 +132,6 @@ function esc(s) {
 
 // ---- retro 3D scene generators (pure SVG, no assets) -----------------------
 
-// A late-90s wireframe globe: rim, latitude/longitude wires, shaded body,
-// amber vertex nodes at the poles. `hue` picks the wire/vertex palette.
-function wireGlobe(px, hue) {
-  const P = {
-    cyan:    { wire: "#9fe8ff", body: "#12324a", glow: "#2f9fc9", vtx: "#ffb23c" },
-    magenta: { wire: "#ff8fe6", body: "#3a1440", glow: "#e05cc8", vtx: "#ffd36a" },
-    amber:   { wire: "#ffd58a", body: "#3a2708", glow: "#ffb23c", vtx: "#9fe8ff" },
-  }[hue] || { wire: "#9fe8ff", body: "#12324a", glow: "#2f9fc9", vtx: "#ffb23c" };
-
-  const r = 50;
-  const lat = [-32, 0, 32].map(cy => {
-    const rx = Math.sqrt(r * r - cy * cy);
-    return `<ellipse cx="0" cy="${cy}" rx="${rx.toFixed(1)}" ry="8"/>`;
-  }).join("");
-  const lon = [16, 34].map(rx => `<ellipse cx="0" cy="0" rx="${rx}" ry="${r}"/>`).join("")
-    + `<line x1="0" y1="${-r}" x2="0" y2="${r}"/>`
-    + `<line x1="${-r}" y1="0" x2="${r}" y2="0"/>`;
-  const gid = "g" + hue;
-  const vtx = [[0, -r], [0, r], [-r, 0], [r, 0], [-16, -20], [16, -20], [0, 32]]
-    .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.4" fill="${P.vtx}"/>`).join("");
-
-  return `<svg class="planet-svg" viewBox="-58 -58 116 116" width="${px}" height="${px}" aria-hidden="true">
-    <defs><radialGradient id="${gid}" cx="34%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="${P.glow}" stop-opacity="0.9"/>
-      <stop offset="55%" stop-color="${P.body}" stop-opacity="0.95"/>
-      <stop offset="100%" stop-color="#050309" stop-opacity="1"/>
-    </radialGradient></defs>
-    <circle cx="0" cy="0" r="${r}" fill="url(#${gid})"/>
-    <g fill="none" stroke="${P.wire}" stroke-width="1.1" opacity="0.75">
-      <circle cx="0" cy="0" r="${r}"/>${lat}${lon}
-    </g>
-    ${vtx}
-  </svg>`;
-}
-
 // A wireframe globe that spins Earth-style: meridians sweep across and flatten
 // edge-on while a surface marker rolls across the front face. Options: hue
 // (palette), tilt (axis lean, deg), rev (reverse spin direction), dur (period).
