@@ -661,7 +661,7 @@ ${axisGizmo()}
   </section>
 
   <footer>
-    <div><a href="https://github.com/DJAscendance/wrlforge-site/blob/master/LICENSE" target="_blank" rel="noopener">GPLv3+</a> © 2026 WRL Forge · Ryan Bundy (aka BassMekanik2000)<br>
+    <div><a href="https://github.com/Ascendance3D/wrlforge-site/blob/master/LICENSE" target="_blank" rel="noopener">GPLv3+</a> © 2026 WRL Forge · Ryan Bundy (aka BassMekanik2000)<br>
       <span class="credit">Hero world: <a href="https://lss3d.silver-hosting.com/index.php?op=worlds" target="_blank" rel="noopener">&ldquo;the Red Raven&rdquo; by LSS</a> &middot; rendered live in X_ITE &middot; used with permission &#9825;</span></div>
     <div class="r"><span>${version} · ${chan}</span><a href="https://skate.fm" target="_blank" rel="noopener">Powered by Skate.FM</a></div>
   </footer>
