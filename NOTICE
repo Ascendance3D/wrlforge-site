@@ -176,6 +176,17 @@ WebP conversions of the curated, path-sanitized screenshots in the WRL Forge
 application repository (Ascendance3D/wrlforge, docs/screenshots/, commit
 36236b65, shipped since v1.3.0-beta.2). They show the released application.
 
+### WRL Forge logo artwork — owner-approved brand asset
+
+  public/brand/wrl-forge-cyan-transparent.svg
+
+Byte-for-byte copy of the owner-approved in-app branding artwork from the WRL
+Forge application repository (Ascendance3D/wrlforge, assets/, last changed in
+commit 1cbbb68; SHA-256 5a0e2094d53d7edefd210b21ae98732b1f385b23da54a0dc073f90e19e7657b1).
+Per that repository's docs/ICONS.md it must not be redrawn, traced, recolored,
+optimized or minified. The site header shows it unmodified, framed to its
+drawn area with CSS; the "FORGE" text beside it is live type.
+
 ### Design reference (no material reused)
 
 The v2 layout was informed by the broad visual direction of the "Stencil Labs

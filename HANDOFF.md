@@ -217,6 +217,20 @@ Branch `design/wrlforge-v2-stencil` from `master` b7bc925. Not pushed, no PR,
 not deployed. Design reference: Stencil Labs Template (21st.dev) — that repo
 has no license, so the implementation is a clean-room original; see NOTICE §5.
 
+Phase 2 (brand + color) on the same branch:
+- Header uses the approved `public/brand/wrl-forge-cyan-transparent.svg`
+  (byte-identical to the app repo's `assets/`; never edit it). `.brand-mark`
+  frames the artwork to its drawn area; `--h` sets the size. The artwork's W
+  overlaps its tiny FORGE caption vertically, so the caption can't be cropped
+  out without clipping the W. It stays.
+- Colors are semantic tokens in the `CSS` constant: amber = action, cyan =
+  technical/selection/focus, teal = structure, green = Available only,
+  violet = Appearance. Use the `-ink` variants for text (AA in both themes).
+  The code panels use fixed `--code-*` tokens because they're dark in both themes.
+- Capability columns take their category color from `.cap-<name>` (`--cat`).
+- The nav sets `aria-current="location"` on the in-page section in view
+  (IntersectionObserver in `CLIENT_JS`).
+
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
   public repo (noted in prior sessions; history rewrite is prohibited — separate
