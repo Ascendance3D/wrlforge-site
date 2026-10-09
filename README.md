@@ -11,7 +11,7 @@ file sizes come live from the GitHub API, so they never go stale.
 ## Platforms
 
 Three platforms are offered: **Windows**, **macOS**, **Linux** — in that display
-order, in both the hero download panel and the "all downloads" list.
+order, in both the Download section's platform tiles and the "All files" list.
 
 `classifyAsset()` maps a GitHub release asset name to a platform. macOS is
 matched **before** the generic Windows `.zip` fallback, so

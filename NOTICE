@@ -152,3 +152,34 @@ the sources (Khronos glTF-Sample-Viewer, Khronos KTX-Software, Google Draco,
 meshoptimizer, GaussianSplats3D). Those components are redistributed here
 exactly as X_ITE ships them, under their own upstream terms; WRL Forge makes
 no additional claim over them.
+
+
+5. Assets added by the v2 redesign
+----------------------------------
+
+### Big Shoulders Stencil — SIL Open Font License 1.1
+
+  public/fonts/BigShouldersStencil.woff2
+  public/fonts/BigShouldersStencil-OFL.txt   (license, retained beside it)
+
+Copyright 2019 The Big Shoulders Project Authors
+(https://github.com/xotypeco/big_shoulders). Taken from google/fonts
+(ofl/bigshouldersstencil), then instanced (wght 500–900, opsz 72) and
+subset to Latin with fontTools, then converted to WOFF2. The OFL permits this modification;
+the font keeps its own license and is not covered by this repo's GPL.
+
+### WRL Forge application screenshots — GPL-3.0-or-later
+
+  public/screens/*.webp
+
+WebP conversions of the curated, path-sanitized screenshots in the WRL Forge
+application repository (Ascendance3D/wrlforge, docs/screenshots/, commit
+36236b65, shipped since v1.3.0-beta.2). They show the released application.
+
+### Design reference (no material reused)
+
+The v2 layout was informed by the broad visual direction of the "Stencil Labs
+Template" by Kedhareswer Naidu (21st.dev; source
+github.com/Kedhareswer/21stdev-my-components, commit 667b2db). That repository
+declares no license. No code, CSS, shaders, glyph outlines, color values,
+copy, or media were copied; the implementation here is original.

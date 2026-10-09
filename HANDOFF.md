@@ -27,7 +27,7 @@ transition is **complete and superseded**.
    remembrance content; shape is sketched in `followup.md` §3. LSS is already
    credited in the footer with a link to
    https://lss3d.silver-hosting.com/index.php?op=worlds .
-2. **Dead `wireGlobe()`** in `worker.js` — safe to delete on the next edit.
+2. ~~Dead `wireGlobe()`~~ — removed in the v2 redesign branch.
 
 `followup.md` is **historical only** and carries a superseded banner; do not
 follow its MIT instructions.
@@ -177,22 +177,45 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 
 ## File map (`worker.js` — single source; there is no index.html)
 
+Rewritten by the v2 "stencil" redesign (branch `design/wrlforge-v2-stencil`,
+NOT deployed — see "V2 redesign lane" below).
+
 - Release data layer: `formatBytes`, `classifyAsset`, `resolveReleaseModel`
-  (prerelease-aware), `esc`.
-- Scene generators (pure SVG): `spinningGlobe(px, {hue,tilt,rev,dur})`,
-  `ringedPlanet(px)` (2-ring alternating-facet gem), `gridFloor()`,
-  `primitiveIcon(kind)`, `axisGizmo()`. NOTE: `wireGlobe()` is now **dead code**
-  (all globes use `spinningGlobe`) — safe to delete on next edit.
-- Download UI: `osIcon(platform, px, cls)` (+ the `OS_ICONS` stem map),
-  `heroButton(asset, platform, os, label, cls)`, `downloadsList`. Page:
-  `renderPage`. Entry: default `fetch` handler.
-- Hero buttons are content-sized (`flex:1 1 auto`) and sit three-across above
-  900px; `@media(max-width:900px)` stacks them full width, so the row never
-  degrades into a 2 + 1 orphan at tablet widths.
-- CSS is one inline `<style>`; motion is gated in
-  `@media(prefers-reduced-motion:no-preference)`. Globe spin = `merspin`
-  keyframe (meridians fade to 0 opacity edge-on so there's no centre line) +
-  `rollmark`/`rollmarkRev` surface marker.
+  (prerelease-aware; also returns `publishedAt` and a 6-entry `history` used
+  by the Development section), `esc`. `REPO` now points at
+  `Ascendance3D/wrlforge` (the old DJAscendance path only redirected).
+- Generators (pure SVG): `primitiveIcon(kind)` (Box/Transform/Group/Material/
+  Route, theme-colored via currentColor) and `heroFallback()` (static
+  viewport box shown without WebGL / reduced motion / <900px). The retro
+  globe/planet/grid generators and the dead `wireGlobe()` were removed.
+- Download UI: `osIcon`, `platformTile(asset, platform, os, arch)`,
+  `downloadsList`. Arch labels follow the app's docs/RELEASES.md policy
+  (Windows x64, macOS Apple Silicon, Linux x64).
+- Content tables: `LINKS`, `STATE` + `tag()`, `CAPS`, `WORKSPACES`, `FAQ`,
+  `HERO_SRC`. **Feature states are verified against the app repo; re-verify
+  before changing any Available / In development / Planned tag.**
+- `CSS` and `CLIENT_JS` are template constants inlined by `renderPage`.
+  Neither may contain a backtick or `${`.
+- Hero: X_ITE boots on idle (skipped for reduced motion, <900px, no WebGL)
+  into `#vp-stage`; the source panel lines highlight a node label in the
+  viewport; a live `Spin.rotation` readout and a TimeSensor pause button use
+  the X_ITE SAI. Rendering is paused (`browser.endUpdate()`) while the hero
+  is off screen.
+- Theme: `data-theme` on `<html>`, saved in `localStorage["wrlf-theme"]`;
+  without a saved choice CSS follows `prefers-color-scheme`.
+- Self-hosted type: `public/fonts/BigShouldersStencil.woff2` (OFL, license
+  beside it) for display; Ubuntu Mono from X_ITE's bundled fonts for labels.
+- Real app screenshots: `public/screens/*.webp` (from the app's
+  docs/screenshots, shipped since v1.3.0-beta.2). Unreleased features are
+  shown only as labeled layout sketches, never as fake screenshots.
+- Local dev gotcha: the page sends `Cache-Control: max-age=300`, so the
+  browser serves stale HTML after edits — load `/?cb=<n>` while iterating.
+
+## V2 redesign lane (local only, awaiting owner review)
+
+Branch `design/wrlforge-v2-stencil` from `master` b7bc925. Not pushed, no PR,
+not deployed. Design reference: Stencil Labs Template (21st.dev) — that repo
+has no license, so the implementation is a clean-room original; see NOTICE §5.
 
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
@@ -201,6 +224,6 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 - `spikes/xite-mall-fit/package.json` in the product repo: was left `UNLICENSED`
   during the MIT lane; the GPL relicense commit `2eb7c39e` touched it — check
   there, not here, if it matters.
-- Two **pre-existing** console errors on the landing page (baseline, unrelated to
-  licensing): `<line> attribute x1/x2: Expected length, "20,18"` from a generated
-  SVG in `worker.js`. Present before and after OSS-2; not fixed in that lane.
+- The two pre-existing `<line> attribute x1/x2: Expected length, "20,18"` console
+  errors came from the old `primitiveIcon("Box")`. Fixed in the v2 branch (0
+  console errors locally); still present on production until v2 deploys.
