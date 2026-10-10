@@ -1,0 +1,282 @@
+[
+  {
+    "tag_name": "v1.4.0",
+    "name": "WRL Forge 1.4.0 (Beta)",
+    "html_url": "https://github.com/Ascendance3D/wrlforge/releases/tag/v1.4.0",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2026-09-22T12:55:21Z",
+    "assets": [
+      {
+        "name": "SHA256SUMS-1.4.0.txt",
+        "size": 775,
+        "content_type": "text/plain; charset=utf-8",
+        "state": "uploaded",
+        "digest": "sha256:106e3bb80f44a64c4d7e4e87f49c9f5e7de53fef3f54fb71e841b92a26e5c598",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/SHA256SUMS-1.4.0.txt"
+      },
+      {
+        "name": "WRL-Forge-1.4.0-linux-x64.AppImage",
+        "size": 134511140,
+        "content_type": "application/vnd.appimage",
+        "state": "uploaded",
+        "digest": "sha256:54f7039da18fecd0c80e80e89157556582b42a432816f1f5faaacca4e6304476",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-1.4.0-linux-x64.AppImage"
+      },
+      {
+        "name": "WRL-Forge-1.4.0-linux-x64.tar.gz",
+        "size": 127613472,
+        "content_type": "application/x-gtar",
+        "state": "uploaded",
+        "digest": "sha256:83298bdc7c94e9c2aa1a0fc451bd66083e9664bc31fda858526f14d7e8aff6e0",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-1.4.0-linux-x64.tar.gz"
+      },
+      {
+        "name": "WRL-Forge-1.4.0-mac-arm64.dmg",
+        "size": 128429796,
+        "content_type": "application/x-apple-diskimage",
+        "state": "uploaded",
+        "digest": "sha256:57afb20ca4413609f9cf99642f4a67650ea3e4d34af9b482da66399e560cf6f8",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-1.4.0-mac-arm64.dmg"
+      },
+      {
+        "name": "WRL-Forge-1.4.0-mac-arm64.zip",
+        "size": 127855018,
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "digest": "sha256:10491864ab29cad2a14aaed46beafe84ae35b3cf9ca0caf0dec0ec655b093596",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-1.4.0-mac-arm64.zip"
+      },
+      {
+        "name": "WRL-Forge-1.4.0-windows-x64.zip",
+        "size": 162238069,
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "digest": "sha256:474ef889db6d42da74659d7f836aea4866293c877a3b3a850380198ba250f422",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-1.4.0-windows-x64.zip"
+      },
+      {
+        "name": "WRL-Forge-1.4.0-x64.msi",
+        "size": 126550016,
+        "content_type": "application/x-msi",
+        "state": "uploaded",
+        "digest": "sha256:c9a60232bab6fcc3f7846b27180307287c6acee6473d493b06295f805262c305",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-1.4.0-x64.msi"
+      },
+      {
+        "name": "WRL-Forge-Portable-1.4.0-x64.exe",
+        "size": 110821351,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:230a2f5e6fef50a928f577fde8a7daddf0ee1c11fc3163cce1df894e4ce175fd",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-Portable-1.4.0-x64.exe"
+      },
+      {
+        "name": "WRL-Forge-Setup-1.4.0-x64.exe",
+        "size": 111040313,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:e78495bec20663c4d1d2e4efcc6c9d55304fb97213f66ba0ecd71c0ee28af1e7",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.4.0/WRL-Forge-Setup-1.4.0-x64.exe"
+      }
+    ]
+  },
+  {
+    "tag_name": "v1.3.0-beta.5",
+    "name": "WRL Forge 1.3.0-beta.5 \u2014 Public Beta",
+    "html_url": "https://github.com/Ascendance3D/wrlforge/releases/tag/v1.3.0-beta.5",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2026-08-31T11:48:27Z",
+    "assets": [
+      {
+        "name": "SHA256SUMS-1.3.0-beta.5.txt",
+        "size": 625,
+        "content_type": "text/plain; charset=utf-8",
+        "state": "uploaded",
+        "digest": "sha256:6a760f1e9314665fb913dad7afdf104507326f9d756c6b885ffb8de742a7e3c5",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/SHA256SUMS-1.3.0-beta.5.txt"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.5-linux-x64.AppImage",
+        "size": 134527291,
+        "content_type": "application/vnd.appimage",
+        "state": "uploaded",
+        "digest": "sha256:c6953217ec41f4916c7f9100396fa72dd4f8a28377b1bc80d99e6c4dbb9e137f",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/WRL-Forge-1.3.0-beta.5-linux-x64.AppImage"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.5-linux-x64.tar.gz",
+        "size": 127632944,
+        "content_type": "application/x-gtar",
+        "state": "uploaded",
+        "digest": "sha256:e009ac15e3003b337ca4770ad9036de53f0097d921a099241be2202997664864",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/WRL-Forge-1.3.0-beta.5-linux-x64.tar.gz"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.5-windows-x64.zip",
+        "size": 162212972,
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "digest": "sha256:f3e48ecc76916d60b4639ae65a2beb9ee081feb9314686c6ab4ce48d982c2d92",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/WRL-Forge-1.3.0-beta.5-windows-x64.zip"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.5-x64.msi",
+        "size": 126525440,
+        "content_type": "application/x-msi",
+        "state": "uploaded",
+        "digest": "sha256:c213eafdeb070221a87cb20b90057f24e9f05ddb21113f79f0f406a9e169e789",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/WRL-Forge-1.3.0-beta.5-x64.msi"
+      },
+      {
+        "name": "WRL-Forge-Portable-1.3.0-beta.5-x64.exe",
+        "size": 110800062,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:6244c06b2055cbd4b83440fced8f01dd3e177c69bb534d2713bc92ac29e55a88",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/WRL-Forge-Portable-1.3.0-beta.5-x64.exe"
+      },
+      {
+        "name": "WRL-Forge-Setup-1.3.0-beta.5-x64.exe",
+        "size": 111019013,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:4c9c55c9fcd670cc86604f7cf1f153e86098114ae89f3935e40b77a13e363454",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.5/WRL-Forge-Setup-1.3.0-beta.5-x64.exe"
+      }
+    ]
+  },
+  {
+    "tag_name": "v1.3.0-beta.3",
+    "name": "WRL Forge 1.3.0-beta.3 \u2014 Public Beta Update",
+    "html_url": "https://github.com/Ascendance3D/wrlforge/releases/tag/v1.3.0-beta.3",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2026-07-25T18:25:13Z",
+    "assets": [
+      {
+        "name": "SHA256SUMS-1.3.0-beta.3.txt",
+        "size": 625,
+        "content_type": "text/plain; charset=utf-8",
+        "state": "uploaded",
+        "digest": "sha256:001e2b56eb609ff6dc08bba1bc03a622da52174ceb0ec99c6bb2e05eb98536b2",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/SHA256SUMS-1.3.0-beta.3.txt"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.3-linux-x64.AppImage",
+        "size": 134158722,
+        "content_type": "application/vnd.appimage",
+        "state": "uploaded",
+        "digest": "sha256:de99abda0e3821961d7cfc01a7528f48acd7e533128bdef5bb4d581978405a90",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/WRL-Forge-1.3.0-beta.3-linux-x64.AppImage"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.3-linux-x64.tar.gz",
+        "size": 127285135,
+        "content_type": "application/x-gtar",
+        "state": "uploaded",
+        "digest": "sha256:d3b793f1877aa9ecacd5fbe3f56aaa2ba9f8f26d4d5696488d8e133c1369ee1e",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/WRL-Forge-1.3.0-beta.3-linux-x64.tar.gz"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.3-windows-x64.zip",
+        "size": 161847616,
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "digest": "sha256:f115aa3687e0c2ad52c01902520adb04e4a1902dddc79fd44b436fee7d1f12b1",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/WRL-Forge-1.3.0-beta.3-windows-x64.zip"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.3-x64.msi",
+        "size": 126242816,
+        "content_type": "application/x-msi",
+        "state": "uploaded",
+        "digest": "sha256:c913da4a7723b8cccc4f499aa85cede454fd71775d45430539b7f3476f601287",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/WRL-Forge-1.3.0-beta.3-x64.msi"
+      },
+      {
+        "name": "WRL-Forge-Portable-1.3.0-beta.3-x64.exe",
+        "size": 110502427,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:7a66d37bdc6fd3a5d5e059064e454379c60a0359998dd78d7c2c244f88eca3f2",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/WRL-Forge-Portable-1.3.0-beta.3-x64.exe"
+      },
+      {
+        "name": "WRL-Forge-Setup-1.3.0-beta.3-x64.exe",
+        "size": 110721381,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:ea8d4fb514e121775cf470cdeb64ff670cf598ff3f4101bee2e63e5c9d015434",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.3/WRL-Forge-Setup-1.3.0-beta.3-x64.exe"
+      }
+    ]
+  },
+  {
+    "tag_name": "v1.3.0-beta.2",
+    "name": "WRL Forge 1.3.0-beta.2 \u2014 First Public Beta",
+    "html_url": "https://github.com/Ascendance3D/wrlforge/releases/tag/v1.3.0-beta.2",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2026-07-14T13:07:48Z",
+    "assets": [
+      {
+        "name": "SHA256SUMS-1.3.0-beta.2.txt",
+        "size": 625,
+        "content_type": "text/plain; charset=utf-8",
+        "state": "uploaded",
+        "digest": "sha256:f83bba1cc5f12d182ab1f038b498e2bbbc162b7ee0ec008a90741c31ab6de7f6",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/SHA256SUMS-1.3.0-beta.2.txt"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.2-linux-x64.AppImage",
+        "size": 134154440,
+        "content_type": "application/vnd.appimage",
+        "state": "uploaded",
+        "digest": "sha256:26c58a83a634c910a575a1f6287cc510b29445e89a23f486355dc5222e3b5b67",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/WRL-Forge-1.3.0-beta.2-linux-x64.AppImage"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.2-linux-x64.tar.gz",
+        "size": 127284232,
+        "content_type": "application/x-gtar",
+        "state": "uploaded",
+        "digest": "sha256:68ca2d3b679b5f079ef4c5140c43f46fe5bccdb37d26d292fb66531dfd5eaff8",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/WRL-Forge-1.3.0-beta.2-linux-x64.tar.gz"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.2-windows-x64.zip",
+        "size": 161843941,
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "digest": "sha256:38599dadc68206cc140065161291c2c50169c06931086c214c1a491bb6844c9d",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/WRL-Forge-1.3.0-beta.2-windows-x64.zip"
+      },
+      {
+        "name": "WRL-Forge-1.3.0-beta.2-x64.msi",
+        "size": 126255104,
+        "content_type": "application/x-msi",
+        "state": "uploaded",
+        "digest": "sha256:29f59abfc4b6effd44cee8983409975dd6b18ac757fd3b5a16be12f44a507bd7",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/WRL-Forge-1.3.0-beta.2-x64.msi"
+      },
+      {
+        "name": "WRL-Forge-Portable-1.3.0-beta.2-x64.exe",
+        "size": 109572720,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:dce1fd99ab6a1fc5ff309bee1da500d0fe89c773d43320ea8505199aa014f4f0",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/WRL-Forge-Portable-1.3.0-beta.2-x64.exe"
+      },
+      {
+        "name": "WRL-Forge-Setup-1.3.0-beta.2-x64.exe",
+        "size": 109791533,
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "digest": "sha256:286c94c57183c6a197108722294e78b9d1a5ac1b6780c6d7eddf73951c3b27f4",
+        "browser_download_url": "https://github.com/Ascendance3D/wrlforge/releases/download/v1.3.0-beta.2/WRL-Forge-Setup-1.3.0-beta.2-x64.exe"
+      }
+    ]
+  }
+]

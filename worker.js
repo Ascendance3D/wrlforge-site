@@ -45,7 +45,7 @@ async function resolveReleaseModel() {
   const model = {
     version: "latest",
     releaseUrl: RELEASES_PAGE + "/latest",
-    prerelease: false,
+    prerelease: null, // unknown until a release resolves; never guess "Stable"
     assets: [],
     checksumsUrl: null,
     heroWindows: null,
@@ -1100,7 +1100,7 @@ const CLIENT_JS = `
 
 function renderPage(model) {
   const version = esc(model.version);
-  const chan = model.prerelease ? "Beta (pre-release)" : "Stable";
+  const chan = model.prerelease === null ? "see GitHub" : model.prerelease ? "Beta (pre-release)" : "Stable";
   const relDate = model.publishedAt ? esc(model.publishedAt.slice(0, 10)) : "";
   const desc = "WRL Forge is a free, open-source desktop authoring environment for VRML97 worlds and objects, with live X_ITE preview, validation and exact-source editing. Visual authoring is in development.";
 
@@ -1183,7 +1183,7 @@ ${CSS}
     <nav class="nav-row" aria-label="Primary">
       <div class="cell"><a class="brand" href="/" aria-label="WRL Forge home">
         <span class="brand-mark"><img src="/brand/wrl-forge-cyan-transparent.svg" width="512" height="512" alt=""></span>
-        <span class="brand-txt" aria-hidden="true"><span class="brand-name">Forge</span><span class="brand-sub">VRML97 · X3D authoring</span></span>
+        <span class="brand-txt" aria-hidden="true"><span class="brand-name">Forge</span><span class="brand-sub">VRML97 authoring</span></span>
       </a></div>
       <div class="cell nav-mid">
         <ul class="nav-links" id="nav-links">
@@ -1222,7 +1222,7 @@ ${CSS}
         <h1 class="stencil hero-h1" id="hero-h"><span>Model<span class="dot">.</span></span><span>Edit<span class="dot">.</span></span><span>Forge<span class="dot">.</span></span></h1>
         <div>
           <p class="lead hero-sub">A modern visual authoring environment for VRML97 and X3D. Build in 3D, work directly with the source, and stay in control of every edit.</p>
-          <p class="label" style="margin-top:12px">Today: VRML97 source editing, validation and live preview. Visual tools and X3D files are in development.</p>
+          <p class="label" style="margin-top:12px">Today: VRML97 source editing, validation and live preview. Visual tools are in development; X3D files are planned.</p>
         </div>
         <div class="hero-cta">
           <a class="btn btn-amber" href="#download">Download WRL Forge <span class="arr" aria-hidden="true">↓</span></a>

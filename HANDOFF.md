@@ -231,6 +231,22 @@ Phase 2 (brand + color) on the same branch:
 - The nav sets `aria-current="location"` on the in-page section in view
   (IntersectionObserver in `CLIENT_JS`).
 
+MAIN-FIX-01 (QA fixes) on the same branch:
+- `node --test` runs `test/release-model.test.mjs`: the release data layer
+  against the official v1.4.0 API response (`test/fixtures/`), plus 403/429,
+  invalid-response and missing-asset fallbacks. No network, no token.
+- An unresolved release now shows the channel as "see GitHub", not "Stable".
+- Firefox logs two `XML Parsing Error … Line Number 1, Column 1` messages
+  when the hero loads. They are harmless and upstream: X_ITE (15.1.10 and
+  16.4.3) tries the X3D-XML parser on every file first, and Firefox reports each
+  failed `DOMParser` parse. They reproduce with a bare X_ITE page and no site
+  code; the scene loads normally. Don't suppress them in site code.
+- Status copy is checked against app tag `v1.4.0` and `origin/main`. Read-only
+  tree and inspector shipped in v1.4.0 (9b83664). Typed editing, first objects,
+  Model workspace and viewport picking are merged after v1.4.0 (In
+  development). X3D files are not supported on either (Planned). The app's
+  local `main` branch is stale, so compare against `origin/main`.
+
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
   public repo (noted in prior sessions; history rewrite is prohibited — separate
