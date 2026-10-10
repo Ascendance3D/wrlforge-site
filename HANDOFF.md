@@ -1,4 +1,4 @@
-# WRL Forge site — session handoff (updated 2026-09-26)
+# WRL Forge site — session handoff (updated 2026-10-10)
 
 Working notes so the next session resumes **exactly** here. Owner: Ryan Bundy
 (aka **BassMekanik2000**). Owner works in staged phases and wants a STOP +
@@ -6,8 +6,9 @@ report + GO/NO-GO between phases — don't run multiple phases uninterrupted.
 
 ## TL;DR — current state
 
-The marketing site (this repo) is **redesigned, deployed, and LIVE at
-wrlforge.com** (Phases 1, 2, 3 and 3.5 all done and deployed).
+The **V2 stencil redesign is LIVE at wrlforge.com** (released 2026-10-10 via
+PR #7, merge `b40c874`; see "V2 release" below). The earlier retro design
+(Phases 1, 2, 3 and 3.5) is superseded.
 
 **Repo truth:**
 
@@ -168,9 +169,12 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 
 ## Deploy runbook + gotchas
 
-- **Local preview**: `npx wrangler dev --port 8788` (from this repo). There is
-  no `package.json` — `npx` fetches wrangler on demand (verified on 4.127.1).
-- **Deploy**: `npx wrangler deploy`. Auth = `CLOUDFLARE_API_TOKEN` env
+- **Local preview**: `npx wrangler dev --port 8788` (from this repo).
+  `package.json` holds only the test script (`npm test`) and has no
+  dependencies, so `npx` fetches wrangler on demand (4.149.0 at the V2
+  release).
+- **Deploy**: `npx wrangler deploy`. Auth = `CLOUDFLARE_API_TOKEN` env, or
+  wrangler's OAuth login (`npx wrangler whoami`), which the V2 release used
   (account "Ascendance Productions"). `account_id` is pinned in `wrangler.toml`
   (`a3fb626872474ce6d6d3a55829a760e7`) — **required**, else deploy 400s on
   `/memberships` with the account-scoped token.
@@ -221,10 +225,10 @@ NOT deployed — see "V2 redesign lane" below).
 - Local dev gotcha: the page sends `Cache-Control: max-age=300`, so the
   browser serves stale HTML after edits — load `/?cb=<n>` while iterating.
 
-## V2 redesign lane (local only, awaiting owner review)
+## V2 redesign lane (released — see "V2 release" below)
 
-Branch `design/wrlforge-v2-stencil` from `master` b7bc925. Not pushed, no PR,
-not deployed. Design reference: Stencil Labs Template (21st.dev) — that repo
+Branch `design/wrlforge-v2-stencil` from `master` b7bc925. Merged to `master`
+by PR #7 and deployed on 2026-10-10. The notes below are kept as history. Design reference: Stencil Labs Template (21st.dev) — that repo
 has no license, so the implementation is a clean-room original; see NOTICE §5.
 
 Phase 2 (brand + color) on the same branch:
@@ -311,7 +315,47 @@ MAIN-RECONCILE-01 (2026-10-09):
   `node --test`. On Node 24 the directory form fails ("Cannot find module
   …/test"); it was already broken on `18e4bee`.
 - The local `origin` URL still says `DJAscendance/wrlforge-site`. GitHub
-  redirects it to `Ascendance3D/wrlforge-site`.
+  redirects it to `Ascendance3D/wrlforge-site`. (Fixed in MAIN-RELEASE-02.)
+
+## V2 release (MAIN-RELEASE-02, 2026-10-10) — current production
+
+- QA1 and QA2 returned `QA_PASS_WITH_NOTES`. The owner approved reconcile
+  candidate `9d089d0` for release.
+- Local `origin` now points to https://github.com/Ascendance3D/wrlforge-site.git.
+- PR #7 (https://github.com/Ascendance3D/wrlforge-site/pull/7) merged with a
+  normal merge commit pinned to `9d089d0`. The merge commit is `b40c874`
+  (parents `18e4bee` and `9d089d0`).
+- `master` has no branch protection, rulesets, or CI workflows. The merge gate
+  was the local checks, run on `b40c874` before deploying:
+  - `node --check` on `worker.js` and `release.js`
+  - `npm test` (32/32)
+  - `git diff --check`
+  - wrangler dry-run
+  - local `wrangler dev` returning HTTP 200
+- Deployed with `npx wrangler deploy` from `master` `b40c874`. Auth was
+  wrangler's OAuth login to the "Ascendance Productions" account; no
+  `CLOUDFLARE_API_TOKEN` was in the shell. `wrangler.toml`, DNS and routes were
+  unchanged.
+  - Deployment ID: `a9fe1d2a-a025-43c3-b573-3afa83e331ee`.
+  - Version: `3fc9d6a4-94fe-460f-94b7-e36186f31819`.
+  - Rollback target: the previous version
+    `aeb41ea8-11b9-4d43-8dfd-6a4e3a9224bc`.
+- Production check (fresh `?cb=` URLs):
+  - The live HTML matches the local `master` render.
+  - All functional checks pass in Chromium, Firefox and WebKit: X_ITE hero,
+    readout, pause, highlighting, off-screen pause, reduced-motion and no-WebGL
+    fallbacks, mobile menu, themes, tabs, FAQ, downloads and checksums, LSS
+    credit, no overflow, and no failed requests for site assets.
+  - The only console noise was Firefox's two known X_ITE messages and the
+    edge-injected Cloudflare Web Analytics beacon (`static.cloudflareinsights.com`,
+    not in `worker.js`). The beacon failed only because the release machine's
+    DNS sinkholes that host.
+- Open after release:
+  - The Firefox X_ITE upstream task is separate and not started.
+  - Real Safari, Firefox on macOS/Windows, and touch devices are untested.
+  - The app's v1.4.0 CHANGELOG omits the scene tree and inspector (app-repo item).
+- Browser QA uses `playwright-cli` (see `CLAUDE.md`). Its `.playwright-cli/`
+  output is temporary; delete it after a QA run.
 
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
