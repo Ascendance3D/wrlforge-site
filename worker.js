@@ -1221,7 +1221,7 @@ ${CSS}
         </div>
         <h1 class="stencil hero-h1" id="hero-h"><span>Model<span class="dot">.</span></span><span>Edit<span class="dot">.</span></span><span>Forge<span class="dot">.</span></span></h1>
         <div>
-          <p class="lead hero-sub">A modern visual authoring environment for VRML97 and X3D. Build in 3D, work directly with the source, and stay in control of every edit.</p>
+          <p class="lead hero-sub">A modern visual authoring environment for VRML97, built with X3D support in mind. Build in 3D, work directly with the source, and stay in control of every edit.</p>
           <p class="label" style="margin-top:12px">Today: VRML97 source editing, validation and live preview. Visual tools are in development; X3D files are planned.</p>
         </div>
         <div class="hero-cta">

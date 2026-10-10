@@ -247,6 +247,33 @@ MAIN-FIX-01 (QA fixes) on the same branch:
   development). X3D files are not supported on either (Planned). The app's
   local `main` branch is stale, so compare against `origin/main`.
 
+MAIN-CLOSEOUT-01 (release candidate, 2026-10-09):
+- Candidate: the commit that adds this note (parent `6cf1449`). The exact SHA
+  is in the closeout report and `git log`.
+- Hero intro now reads "…for VRML97, built with X3D support in mind…". The
+  X3D roadmap note and the other status copy are unchanged.
+- QA1: candidate and DCO sign-offs confirmed. Its findings (Firefox XML
+  messages, untested direct artifact links, OFL whitespace) were addressed in
+  MAIN-FIX-01.
+- QA2: independent review of this candidate is **pending**. Don't treat it as
+  passed.
+- Verified on the candidate:
+  - `node --check`, `node --test` (19/19), `git diff --check` and the
+    wrangler dry-run all pass.
+  - Cross-engine suite: 60/60 each in Chromium, Firefox and WebKit (Playwright
+    Linux builds).
+- Future task (separate lane): the Firefox X_ITE XML-parse console messages.
+  Report them upstream, or review a site-side parser-order change. No X_ITE
+  upgrade without a review decision.
+- Release limitations:
+  - Release data comes from the unauthenticated GitHub API. When it's
+    rate-limited, the page falls back to the releases page and labels the
+    channel "see GitHub".
+  - Not tested in real Safari, real Firefox on macOS/Windows, on touch devices,
+    or on a GPU-less machine.
+  - The app's v1.4.0 CHANGELOG omits the read-only scene tree and inspector,
+    which did ship (app-repo item).
+
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
   public repo (noted in prior sessions; history rewrite is prohibited — separate
