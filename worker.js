@@ -3,113 +3,7 @@
 // (prereleases INCLUDED — the product currently ships beta prereleases, which
 // the /releases/latest endpoint deliberately hides).
 
-const REPO = "Ascendance3D/wrlforge";
-const RELEASES_PAGE = "https://github.com/Ascendance3D/wrlforge/releases";
-
-// ---- release data layer ----------------------------------------------------
-
-function formatBytes(bytes) {
-  if (!bytes || bytes < 0) return "";
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) return (mb / 1024).toFixed(1) + " GB";
-  if (mb >= 100) return Math.round(mb) + " MB";
-  return mb.toFixed(1) + " MB";
-}
-
-// Classify a release asset by filename into platform + human-friendly kind.
-function classifyAsset(asset) {
-  const n = asset.name.toLowerCase();
-  const base = { platform: "other", os: "", kind: "Download", ext: "" };
-
-  if (n.endsWith(".appimage")) return { ...base, platform: "linux", os: "Linux", kind: "AppImage", ext: "AppImage" };
-  if (n.endsWith(".tar.gz"))   return { ...base, platform: "linux", os: "Linux", kind: "Portable (tar.gz)", ext: "tar.gz" };
-  if (n.endsWith(".deb"))      return { ...base, platform: "linux", os: "Linux", kind: "Debian package", ext: "deb" };
-
-  // macOS MUST be decided before the generic Windows .zip fallback below,
-  // otherwise WRL-Forge-<v>-mac-arm64.zip is mislabelled as a Windows build.
-  if (n.endsWith(".dmg")) return { ...base, platform: "mac", os: "macOS", kind: "Disk Image", ext: "dmg" };
-  if (n.endsWith(".zip") && /(^|[-_.])(mac|macos|osx|darwin)([-_.]|$)/.test(n.slice(0, -4)))
-    return { ...base, platform: "mac", os: "macOS", kind: "Portable (zip)", ext: "zip" };
-
-  if (n.endsWith(".msi"))                            return { ...base, platform: "windows", os: "Windows", kind: "MSI installer", ext: "msi" };
-  if (n.endsWith(".zip"))                            return { ...base, platform: "windows", os: "Windows", kind: "Portable (zip)", ext: "zip" };
-  if (n.includes("portable") && n.endsWith(".exe")) return { ...base, platform: "windows", os: "Windows", kind: "Portable (exe)", ext: "exe" };
-  if (n.endsWith(".exe"))                            return { ...base, platform: "windows", os: "Windows", kind: "Installer (Setup)", ext: "exe" };
-
-  if (n.startsWith("sha256") || n.includes("sha256sums")) return { ...base, platform: "checksums", kind: "SHA-256 checksums", ext: "txt" };
-
-  return base;
-}
-
-async function resolveReleaseModel() {
-  const model = {
-    version: "latest",
-    releaseUrl: RELEASES_PAGE + "/latest",
-    prerelease: null, // unknown until a release resolves; never guess "Stable"
-    assets: [],
-    checksumsUrl: null,
-    heroWindows: null,
-    heroMac: null,
-    heroLinux: null,
-    publishedAt: null,
-    history: [],
-  };
-
-  try {
-    const res = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=15`, {
-      headers: { "User-Agent": "WRLForge-Site-Worker", "Accept": "application/vnd.github+json" },
-      cf: { cacheTtl: 300, cacheEverything: true },
-    });
-    if (!res.ok) return model;
-
-    const releases = await res.json();
-    const rel = Array.isArray(releases) ? releases.find(r => r && !r.draft) : null;
-    if (!rel) return model;
-
-    model.version = rel.tag_name || model.version;
-    model.releaseUrl = rel.html_url || model.releaseUrl;
-    model.prerelease = !!rel.prerelease;
-    model.publishedAt = rel.published_at || null;
-
-    // Release history for the "Development" section — straight from GitHub,
-    // never hand-maintained, so dates and names can't drift.
-    model.history = releases.filter(r => r && !r.draft).slice(0, 6).map(r => ({
-      tag: r.tag_name || "",
-      name: r.name || r.tag_name || "",
-      url: r.html_url || RELEASES_PAGE,
-      date: (r.published_at || "").slice(0, 10),
-      prerelease: !!r.prerelease,
-    }));
-
-    const classified = (rel.assets || []).map(a => ({
-      name: a.name,
-      url: a.browser_download_url,
-      size: a.size,
-      sizeLabel: formatBytes(a.size),
-      ...classifyAsset(a),
-    }));
-
-    for (const a of classified) {
-      if (a.platform === "checksums") { model.checksumsUrl = a.url; continue; }
-      if (a.platform === "windows" || a.platform === "mac" || a.platform === "linux") model.assets.push(a);
-    }
-
-    const byKind = (arr, kinds) => kinds.map(k => arr.find(a => a.kind === k)).find(Boolean);
-    const win = model.assets.filter(a => a.platform === "windows");
-    const mac = model.assets.filter(a => a.platform === "mac");
-    const lin = model.assets.filter(a => a.platform === "linux");
-    model.heroWindows = byKind(win, ["Installer (Setup)", "MSI installer", "Portable (exe)", "Portable (zip)"]) || win[0] || null;
-    model.heroMac     = byKind(mac, ["Disk Image", "Portable (zip)"]) || mac[0] || null;
-    model.heroLinux   = byKind(lin, ["AppImage", "Portable (tar.gz)", "Debian package"]) || lin[0] || null;
-
-    const order = { windows: 0, mac: 1, linux: 2 };
-    model.assets.sort((a, b) => (order[a.platform] - order[b.platform]) || a.name.localeCompare(b.name));
-  } catch (e) {
-    // Silent fallback to defaults above.
-  }
-
-  return model;
-}
+import { CANONICAL_REPO, repoLinks, resolveReleaseModel } from "./release.js";
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => (
@@ -190,10 +84,10 @@ function osIcon(platform, px, cls) {
 
 // One platform tile in the download band. Arch is stated from the owner's
 // platform policy (docs/RELEASES.md): Windows x64, macOS Apple Silicon, Linux x64.
-function platformTile(asset, platform, os, arch) {
+function platformTile(asset, platform, os, arch, releasesPage) {
   const mark = osIcon(platform, 26, "btn-ico");
   if (!asset) {
-    return `<a href="${RELEASES_PAGE}" class="plat">
+    return `<a href="${esc(releasesPage)}" class="plat">
       <span class="p-os">${esc(arch)}</span>
       <span class="p-title">${mark}<span>${esc(os)}</span></span>
       <span class="p-sub">See all releases →</span></a>`;
@@ -219,7 +113,7 @@ function downloadsList(model) {
 
 // ---- page content ----------------------------------------------------------
 
-const APP = "https://github.com/Ascendance3D/wrlforge";
+const APP = repoLinks(CANONICAL_REPO).repo;
 const DOC = APP + "/blob/main/";
 const LINKS = {
   repo: APP,
@@ -1101,6 +995,7 @@ const CLIENT_JS = `
 function renderPage(model) {
   const version = esc(model.version);
   const chan = model.prerelease === null ? "see GitHub" : model.prerelease ? "Beta (pre-release)" : "Stable";
+  const links = model.links || repoLinks(CANONICAL_REPO);
   const relDate = model.publishedAt ? esc(model.publishedAt.slice(0, 10)) : "";
   const desc = "WRL Forge is a free, open-source desktop authoring environment for VRML97 worlds and objects, with live X_ITE preview, validation and exact-source editing. Visual authoring is in development.";
 
@@ -1143,7 +1038,7 @@ function renderPage(model) {
           <span class="nm">${esc(r.name)}</span>
           <span class="dt">${esc(r.date)}</span>
           <span class="tag ${i === 0 ? "ok" : "plan"}">${i === 0 ? "Latest" : (r.prerelease ? "Pre-release" : "Release")}</span></a></li>`).join("")
-    : `<li><a href="${RELEASES_PAGE}" ${ext}><span class="t">Releases</span><span class="nm">Release history is on GitHub</span><span class="dt"></span><span class="tag plan">GitHub</span></a></li>`;
+    : `<li><a href="${esc(links.releases)}" ${ext}><span class="t">Releases</span><span class="nm">Release history is on GitHub</span><span class="dt"></span><span class="tag plan">GitHub</span></a></li>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1161,11 +1056,11 @@ function renderPage(model) {
 <meta property="og:description" content="${desc}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wrlforge.com/">
-<meta property="og:image" content="https://raw.githubusercontent.com/Ascendance3D/wrlforge/main/assets/generated/icons/runtime/icon.png">
+<meta property="og:image" content="${links.rawMain}/assets/generated/icons/runtime/icon.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WRL Forge — Model. Edit. Forge.">
 <meta name="twitter:description" content="${desc}">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/Ascendance3D/wrlforge/main/assets/generated/icons/runtime/icon.png">
+<meta name="twitter:image" content="${links.rawMain}/assets/generated/icons/runtime/icon.png">
 <script>
 // Theme before first paint: saved choice, else the OS preference via CSS.
 (function(){try{var t=localStorage.getItem("wrlf-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}
@@ -1468,9 +1363,9 @@ ${CSS}
     <div class="row">
       <div class="cell span4" style="padding:0">
         <div class="platforms">
-          ${platformTile(model.heroWindows, "windows", "Windows", "Windows · x64")}
-          ${platformTile(model.heroMac, "mac", "macOS", "macOS · Apple Silicon")}
-          ${platformTile(model.heroLinux, "linux", "Linux", "Linux · x64")}
+          ${platformTile(model.heroWindows, "windows", "Windows", "Windows · x64", links.releases)}
+          ${platformTile(model.heroMac, "mac", "macOS", "macOS · Apple Silicon", links.releases)}
+          ${platformTile(model.heroLinux, "linux", "Linux", "Linux · x64", links.releases)}
         </div>
         ${downloadsList(model)}
         <div class="dl-links">
@@ -1478,7 +1373,7 @@ ${CSS}
           <a href="${esc(model.releaseUrl)}" ${ext}>Release notes</a>
           <a href="${LINKS.install}" ${ext}>Installation guide</a>
           <a href="${LINKS.troubleshooting}" ${ext}>Troubleshooting</a>
-          <a href="${RELEASES_PAGE}" ${ext}>All releases</a>
+          <a href="${esc(links.releases)}" ${ext}>All releases</a>
         </div>
       </div>
     </div>

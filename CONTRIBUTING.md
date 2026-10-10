@@ -5,7 +5,7 @@ single Cloudflare Worker at [wrlforge.com](https://wrlforge.com). Contributions 
 welcome.
 
 For the product itself, see
-[DJAscendance/wrlforge](https://github.com/DJAscendance/wrlforge) and its own,
+[Ascendance3D/wrlforge](https://github.com/Ascendance3D/wrlforge) and its own,
 longer `CONTRIBUTING.md`. This file covers the site only.
 
 ## Licensing and copyright

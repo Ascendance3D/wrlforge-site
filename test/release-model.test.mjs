@@ -1,5 +1,5 @@
 // Deterministic tests for the release data layer and download UI.
-// Run: node --test test/
+// Run: npm test (or node --test)
 //
 // The Worker's GitHub API call is replaced with a stub, so these tests need no
 // network and no token. The fixture is the official
@@ -163,4 +163,39 @@ test("asset names from the API are HTML-escaped", async () => {
   const { html } = await render(() => json(rel));
   assert.ok(!html.includes("<script>alert(1)</script>"));
   assert.ok(html.includes("x&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;-linux.deb"));
+});
+
+// ---- merged release layer (master's canonical-repo architecture + V2 render)
+
+test("403/429/5xx and network errors are reported to Worker logs, page still renders", async () => {
+  const orig = console.error;
+  for (const [name, stub] of Object.entries(failures).filter(([n]) => /403|429|500|network/.test(n))) {
+    const logged = [];
+    console.error = (...a) => logged.push(a.join(" "));
+    try { await render(stub); } finally { console.error = orig; }
+    assert.equal(logged.length, 1, name);
+    assert.match(logged[0], /^release lookup failed:/, name);
+  }
+});
+
+test("canonical repository links in the rendered page", async () => {
+  const { html } = await render(() => json(FIXTURE));
+  assert.ok(html.includes('content="https://raw.githubusercontent.com/Ascendance3D/wrlforge/main/assets/generated/icons/runtime/icon.png"'));
+  assert.ok(html.includes(`href="${RELEASES_PAGE}" target="_blank" rel="noopener">All releases`));
+  assert.ok(!html.includes("DJAscendance"));
+});
+
+test("incomplete release data: missing name, URL and date fall back cleanly", async () => {
+  const rel = [{ tag_name: "v1.4.0", draft: false, prerelease: true, assets: [] }];
+  const { html } = await render(() => json(rel));
+  assert.ok(html.includes('<span class="ver">v1.4.0</span><span class="tag dev">Beta (pre-release)</span></div>'));
+  assert.ok(html.includes(`<li><a href="${RELEASES_PAGE}" target="_blank" rel="noopener">`), "history row links to the releases page");
+  assert.ok(html.includes(`href="${RELEASES_PAGE}/latest"`), "release notes fall back to /latest");
+  assert.ok(!/undefined|>null</.test(html));
+});
+
+test("worker.js exports only the default handler (workerd rejects other named exports)", async () => {
+  const mod = await import("../worker.js");
+  assert.deepEqual(Object.keys(mod), ["default"]);
+  assert.equal(typeof mod.default.fetch, "function");
 });

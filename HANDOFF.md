@@ -1,4 +1,4 @@
-# WRL Forge site — session handoff (updated 2026-08-29)
+# WRL Forge site — session handoff (updated 2026-09-26)
 
 Working notes so the next session resumes **exactly** here. Owner: Ryan Bundy
 (aka **BassMekanik2000**). Owner works in staged phases and wants a STOP +
@@ -11,10 +11,15 @@ wrlforge.com** (Phases 1, 2, 3 and 3.5 all done and deployed).
 
 **Repo truth:**
 
-- Repository: `DJAscendance/wrlforge-site` — **public** since 2026-07-16.
-- Remote: `origin` → https://github.com/DJAscendance/wrlforge-site.git
+- Repository: `Ascendance3D/wrlforge-site` — **public** since 2026-07-16.
+- Remote: `origin` → https://github.com/Ascendance3D/wrlforge-site.git
 - Default branch: **`master`**; `origin/master` tracking.
 - No secrets in the repo (the Cloudflare token stays in the shell env).
+- **Product repo migration is complete.** Release data now comes **only** from
+  `Ascendance3D/wrlforge` — the Worker makes a single canonical GitHub request.
+  The temporary `DJAscendance/wrlforge` fallback (`FALLBACK_REPO` /
+  `REPO_CANDIDATES`) has been **removed** from `worker.js`. The site repo stays
+  `Ascendance3D/wrlforge-site`.
 
 **Licensing truth (see "License situation" below — this changed):** both the
 product and this site are now **`GPL-3.0-or-later`**. The July 2026 MIT
@@ -36,7 +41,7 @@ follow its MIT instructions.
 
 - **Repo**: this one — `/home/ryan/Projects/cybertown/wrlforge-site` (separate
   from the product repo; promoted out of the product repo's untracked `site/`).
-  Public on GitHub as `DJAscendance/wrlforge-site`, `origin/master` tracking.
+  Public on GitHub as `Ascendance3D/wrlforge-site`, `origin/master` tracking.
 - **Phase 1**: fixed the broken downloads. The Worker used `/releases/latest`
   which 404s because `v1.3.0-beta.2` is a **prerelease**; every download button
   was 404ing. Now queries `/releases?per_page=15` and takes the newest
@@ -87,7 +92,7 @@ platform indicator.
 
 **Current, as of 2026-08-29 — this supersedes everything earlier:**
 
-- The **product** `DJAscendance/wrlforge` is **`GPL-3.0-or-later`** as of commit
+- The **product** `Ascendance3D/wrlforge` is **`GPL-3.0-or-later`** as of commit
   `2eb7c39e7ffd6b830155c4ee3d9b2dc8cb6aab1d`
   ("chore: relicense WRLForge under GPL-3.0-or-later").
 - **This site's own code is `GPL-3.0-or-later` too** (lane OSS-2). `LICENSE` is
@@ -180,15 +185,20 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 Rewritten by the v2 "stencil" redesign (branch `design/wrlforge-v2-stencil`,
 NOT deployed — see "V2 redesign lane" below).
 
-- Release data layer: `formatBytes`, `classifyAsset`, `resolveReleaseModel`
+- Release data layer (in `release.js`, imported by `worker.js`): `formatBytes`,
+  `classifyAsset`, `resolveReleaseModel`
   (prerelease-aware; also returns `publishedAt` and a 6-entry `history` used
-  by the Development section), `esc`. `REPO` now points at
-  `Ascendance3D/wrlforge` (the old DJAscendance path only redirected).
+  by the Development section). `esc` stays in `worker.js`. Since the reconcile
+  with master:
+  `CANONICAL_REPO` (`Ascendance3D/wrlforge`), `repoLinks(repo)`, and
+  `fetchReleases(fetchImpl)` (throws on non-404 API errors; the catch in
+  `resolveReleaseModel(fetchImpl)` logs `release lookup failed:` and keeps the
+  page up). `renderPage` takes its repo links from `model.links`.
 - Generators (pure SVG): `primitiveIcon(kind)` (Box/Transform/Group/Material/
   Route, theme-colored via currentColor) and `heroFallback()` (static
   viewport box shown without WebGL / reduced motion / <900px). The retro
   globe/planet/grid generators and the dead `wireGlobe()` were removed.
-- Download UI: `osIcon`, `platformTile(asset, platform, os, arch)`,
+- Download UI: `osIcon`, `platformTile(asset, platform, os, arch, releasesPage)`,
   `downloadsList`. Arch labels follow the app's docs/RELEASES.md policy
   (Windows x64, macOS Apple Silicon, Linux x64).
 - Content tables: `LINKS`, `STATE` + `tag()`, `CAPS`, `WORKSPACES`, `FAQ`,
@@ -273,6 +283,35 @@ MAIN-CLOSEOUT-01 (release candidate, 2026-10-09):
     or on a GPU-less machine.
   - The app's v1.4.0 CHANGELOG omits the read-only scene tree and inspector,
     which did ship (app-repo item).
+
+MAIN-RECONCILE-01 (2026-10-09):
+- MAIN-RELEASE-01 stopped because `origin/master` had moved to `18e4bee`
+  (PRs #2–#6: Ascendance3D migration, retired old-owner fallback, removed
+  `wireGlobe`). That conflicted with V2 in `worker.js` and `HANDOFF.md`.
+- Merged `origin/master` into the V2 branch with a normal merge commit
+  (parents `ef4b151` and `18e4bee`). The new candidate is that merge commit;
+  its SHA is in the reconcile report and `git log`. It needs independent QA
+  before release.
+- `worker.js` keeps master's release layer (`CANONICAL_REPO`, `repoLinks`,
+  `fetchReleases`, `resolveReleaseModel(fetchImpl)`, error logging and test
+  exports) and all of V2's design, copy and download UI. The `prerelease: null`
+  "see GitHub" fallback is kept. V2's `RELEASES_PAGE` constant is gone; links
+  come from `model.links`.
+- Tests: `npm test` runs both suites (32 tests). Two assertions in
+  `test/release-layer.test.js` checked old-design strings ("STABLE",
+  "PRE-RELEASE BETA", "App Repository"). They now check the V2 equivalents.
+- **Deploy blocker found on master `18e4bee`:** its test-only named exports
+  in `worker.js` (`export { CANONICAL_REPO, … }`) stop the Workers runtime
+  from starting ("Incorrect type for map entry 'CANONICAL_REPO'"). Reproduced
+  with `wrangler dev` on a clean export of master. `wrangler deploy --dry-run`
+  does not catch it. Fix: the release layer moved unchanged into `release.js`,
+  and `worker.js` exports only its default handler (guarded by a test). The
+  render tests go through the Worker's `fetch`.
+- `package.json` test script changed from `node --test test/` to
+  `node --test`. On Node 24 the directory form fails ("Cannot find module
+  …/test"); it was already broken on `18e4bee`.
+- The local `origin` URL still says `DJAscendance/wrlforge-site`. GitHub
+  redirects it to `Ascendance3D/wrlforge-site`.
 
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
