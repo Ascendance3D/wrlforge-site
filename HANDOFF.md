@@ -32,6 +32,7 @@ transition is **complete and superseded**.
    remembrance content; shape is sketched in `followup.md` §3. LSS is already
    credited in the footer with a link to
    https://lss3d.silver-hosting.com/index.php?op=worlds .
+2. ~~Dead `wireGlobe()`~~ — removed in the v2 redesign branch.
 
 `followup.md` is **historical only** and carries a superseded banner; do not
 follow its MIT instructions.
@@ -181,21 +182,136 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 
 ## File map (`worker.js` — single source; there is no index.html)
 
-- Release data layer: `formatBytes`, `classifyAsset`, `resolveReleaseModel`
-  (prerelease-aware), `esc`.
-- Scene generators (pure SVG): `spinningGlobe(px, {hue,tilt,rev,dur})`,
-  `ringedPlanet(px)` (2-ring alternating-facet gem), `gridFloor()`,
-  `primitiveIcon(kind)`, `axisGizmo()`.
-- Download UI: `osIcon(platform, px, cls)` (+ the `OS_ICONS` stem map),
-  `heroButton(asset, platform, os, label, cls)`, `downloadsList`. Page:
-  `renderPage`. Entry: default `fetch` handler.
-- Hero buttons are content-sized (`flex:1 1 auto`) and sit three-across above
-  900px; `@media(max-width:900px)` stacks them full width, so the row never
-  degrades into a 2 + 1 orphan at tablet widths.
-- CSS is one inline `<style>`; motion is gated in
-  `@media(prefers-reduced-motion:no-preference)`. Globe spin = `merspin`
-  keyframe (meridians fade to 0 opacity edge-on so there's no centre line) +
-  `rollmark`/`rollmarkRev` surface marker.
+Rewritten by the v2 "stencil" redesign (branch `design/wrlforge-v2-stencil`,
+NOT deployed — see "V2 redesign lane" below).
+
+- Release data layer (in `release.js`, imported by `worker.js`): `formatBytes`,
+  `classifyAsset`, `resolveReleaseModel`
+  (prerelease-aware; also returns `publishedAt` and a 6-entry `history` used
+  by the Development section). `esc` stays in `worker.js`. Since the reconcile
+  with master:
+  `CANONICAL_REPO` (`Ascendance3D/wrlforge`), `repoLinks(repo)`, and
+  `fetchReleases(fetchImpl)` (throws on non-404 API errors; the catch in
+  `resolveReleaseModel(fetchImpl)` logs `release lookup failed:` and keeps the
+  page up). `renderPage` takes its repo links from `model.links`.
+- Generators (pure SVG): `primitiveIcon(kind)` (Box/Transform/Group/Material/
+  Route, theme-colored via currentColor) and `heroFallback()` (static
+  viewport box shown without WebGL / reduced motion / <900px). The retro
+  globe/planet/grid generators and the dead `wireGlobe()` were removed.
+- Download UI: `osIcon`, `platformTile(asset, platform, os, arch, releasesPage)`,
+  `downloadsList`. Arch labels follow the app's docs/RELEASES.md policy
+  (Windows x64, macOS Apple Silicon, Linux x64).
+- Content tables: `LINKS`, `STATE` + `tag()`, `CAPS`, `WORKSPACES`, `FAQ`,
+  `HERO_SRC`. **Feature states are verified against the app repo; re-verify
+  before changing any Available / In development / Planned tag.**
+- `CSS` and `CLIENT_JS` are template constants inlined by `renderPage`.
+  Neither may contain a backtick or `${`.
+- Hero: X_ITE boots on idle (skipped for reduced motion, <900px, no WebGL)
+  into `#vp-stage`; the source panel lines highlight a node label in the
+  viewport; a live `Spin.rotation` readout and a TimeSensor pause button use
+  the X_ITE SAI. Rendering is paused (`browser.endUpdate()`) while the hero
+  is off screen.
+- Theme: `data-theme` on `<html>`, saved in `localStorage["wrlf-theme"]`;
+  without a saved choice CSS follows `prefers-color-scheme`.
+- Self-hosted type: `public/fonts/BigShouldersStencil.woff2` (OFL, license
+  beside it) for display; Ubuntu Mono from X_ITE's bundled fonts for labels.
+- Real app screenshots: `public/screens/*.webp` (from the app's
+  docs/screenshots, shipped since v1.3.0-beta.2). Unreleased features are
+  shown only as labeled layout sketches, never as fake screenshots.
+- Local dev gotcha: the page sends `Cache-Control: max-age=300`, so the
+  browser serves stale HTML after edits — load `/?cb=<n>` while iterating.
+
+## V2 redesign lane (local only, awaiting owner review)
+
+Branch `design/wrlforge-v2-stencil` from `master` b7bc925. Not pushed, no PR,
+not deployed. Design reference: Stencil Labs Template (21st.dev) — that repo
+has no license, so the implementation is a clean-room original; see NOTICE §5.
+
+Phase 2 (brand + color) on the same branch:
+- Header uses the approved `public/brand/wrl-forge-cyan-transparent.svg`
+  (byte-identical to the app repo's `assets/`; never edit it). `.brand-mark`
+  frames the artwork to its drawn area; `--h` sets the size. The artwork's W
+  overlaps its tiny FORGE caption vertically, so the caption can't be cropped
+  out without clipping the W. It stays.
+- Colors are semantic tokens in the `CSS` constant: amber = action, cyan =
+  technical/selection/focus, teal = structure, green = Available only,
+  violet = Appearance. Use the `-ink` variants for text (AA in both themes).
+  The code panels use fixed `--code-*` tokens because they're dark in both themes.
+- Capability columns take their category color from `.cap-<name>` (`--cat`).
+- The nav sets `aria-current="location"` on the in-page section in view
+  (IntersectionObserver in `CLIENT_JS`).
+
+MAIN-FIX-01 (QA fixes) on the same branch:
+- `node --test` runs `test/release-model.test.mjs`: the release data layer
+  against the official v1.4.0 API response (`test/fixtures/`), plus 403/429,
+  invalid-response and missing-asset fallbacks. No network, no token.
+- An unresolved release now shows the channel as "see GitHub", not "Stable".
+- Firefox logs two `XML Parsing Error … Line Number 1, Column 1` messages
+  when the hero loads. They are harmless and upstream: X_ITE (15.1.10 and
+  16.4.3) tries the X3D-XML parser on every file first, and Firefox reports each
+  failed `DOMParser` parse. They reproduce with a bare X_ITE page and no site
+  code; the scene loads normally. Don't suppress them in site code.
+- Status copy is checked against app tag `v1.4.0` and `origin/main`. Read-only
+  tree and inspector shipped in v1.4.0 (9b83664). Typed editing, first objects,
+  Model workspace and viewport picking are merged after v1.4.0 (In
+  development). X3D files are not supported on either (Planned). The app's
+  local `main` branch is stale, so compare against `origin/main`.
+
+MAIN-CLOSEOUT-01 (release candidate, 2026-10-09):
+- Candidate: the commit that adds this note (parent `6cf1449`). The exact SHA
+  is in the closeout report and `git log`.
+- Hero intro now reads "…for VRML97, built with X3D support in mind…". The
+  X3D roadmap note and the other status copy are unchanged.
+- QA1: candidate and DCO sign-offs confirmed. Its findings (Firefox XML
+  messages, untested direct artifact links, OFL whitespace) were addressed in
+  MAIN-FIX-01.
+- QA2: independent review of this candidate is **pending**. Don't treat it as
+  passed.
+- Verified on the candidate:
+  - `node --check`, `node --test` (19/19), `git diff --check` and the
+    wrangler dry-run all pass.
+  - Cross-engine suite: 60/60 each in Chromium, Firefox and WebKit (Playwright
+    Linux builds).
+- Future task (separate lane): the Firefox X_ITE XML-parse console messages.
+  Report them upstream, or review a site-side parser-order change. No X_ITE
+  upgrade without a review decision.
+- Release limitations:
+  - Release data comes from the unauthenticated GitHub API. When it's
+    rate-limited, the page falls back to the releases page and labels the
+    channel "see GitHub".
+  - Not tested in real Safari, real Firefox on macOS/Windows, on touch devices,
+    or on a GPU-less machine.
+  - The app's v1.4.0 CHANGELOG omits the read-only scene tree and inspector,
+    which did ship (app-repo item).
+
+MAIN-RECONCILE-01 (2026-10-09):
+- MAIN-RELEASE-01 stopped because `origin/master` had moved to `18e4bee`
+  (PRs #2–#6: Ascendance3D migration, retired old-owner fallback, removed
+  `wireGlobe`). That conflicted with V2 in `worker.js` and `HANDOFF.md`.
+- Merged `origin/master` into the V2 branch with a normal merge commit
+  (parents `ef4b151` and `18e4bee`). The new candidate is that merge commit;
+  its SHA is in the reconcile report and `git log`. It needs independent QA
+  before release.
+- `worker.js` keeps master's release layer (`CANONICAL_REPO`, `repoLinks`,
+  `fetchReleases`, `resolveReleaseModel(fetchImpl)`, error logging and test
+  exports) and all of V2's design, copy and download UI. The `prerelease: null`
+  "see GitHub" fallback is kept. V2's `RELEASES_PAGE` constant is gone; links
+  come from `model.links`.
+- Tests: `npm test` runs both suites (32 tests). Two assertions in
+  `test/release-layer.test.js` checked old-design strings ("STABLE",
+  "PRE-RELEASE BETA", "App Repository"). They now check the V2 equivalents.
+- **Deploy blocker found on master `18e4bee`:** its test-only named exports
+  in `worker.js` (`export { CANONICAL_REPO, … }`) stop the Workers runtime
+  from starting ("Incorrect type for map entry 'CANONICAL_REPO'"). Reproduced
+  with `wrangler dev` on a clean export of master. `wrangler deploy --dry-run`
+  does not catch it. Fix: the release layer moved unchanged into `release.js`,
+  and `worker.js` exports only its default handler (guarded by a test). The
+  render tests go through the Worker's `fetch`.
+- `package.json` test script changed from `node --test test/` to
+  `node --test`. On Node 24 the directory form fails ("Cannot find module
+  …/test"); it was already broken on `18e4bee`.
+- The local `origin` URL still says `DJAscendance/wrlforge-site`. GitHub
+  redirects it to `Ascendance3D/wrlforge-site`.
 
 ## Open flags (not blocking; surface to owner)
 - Product git history has commit-author email `ascendance@skate.fm` in the
@@ -204,6 +320,6 @@ site. Do NOT reuse other scraped Cybertown items without similar permission.
 - `spikes/xite-mall-fit/package.json` in the product repo: was left `UNLICENSED`
   during the MIT lane; the GPL relicense commit `2eb7c39e` touched it — check
   there, not here, if it matters.
-- Two **pre-existing** console errors on the landing page (baseline, unrelated to
-  licensing): `<line> attribute x1/x2: Expected length, "20,18"` from a generated
-  SVG in `worker.js`. Present before and after OSS-2; not fixed in that lane.
+- The two pre-existing `<line> attribute x1/x2: Expected length, "20,18"` console
+  errors came from the old `primitiveIcon("Box")`. Fixed in the v2 branch (0
+  console errors locally); still present on production until v2 deploys.

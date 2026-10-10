@@ -7,8 +7,18 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   CANONICAL_REPO, repoLinks, fetchReleases,
-  classifyAsset, resolveReleaseModel, renderPage,
-} from "../worker.js";
+  classifyAsset, resolveReleaseModel,
+} from "../release.js";
+import worker from "../worker.js";
+
+// Render the page through the Worker's real entry point with GitHub mocked.
+// (worker.js may only export its handler: workerd rejects other named exports.)
+async function renderPage(fetchImpl) {
+  const orig = globalThis.fetch;
+  globalThis.fetch = fetchImpl;
+  try { return await (await worker.fetch(new Request("https://wrlforge.com/"), {}, {})).text(); }
+  finally { globalThis.fetch = orig; }
+}
 
 const API = `https://api.github.com/repos/${CANONICAL_REPO}/releases?per_page=15`;
 // The retired old owner. Any hit to this URL is a regression.
@@ -118,17 +128,22 @@ test("canonical release: Windows/macOS/Linux hero downloads, prerelease flag, ch
 });
 
 test("stable (non-prerelease) release still supported", async () => {
-  const m = await resolveReleaseModel(mockFetch({ [API]: json(200, [release(CANONICAL_REPO, "v2.0.0", false)]) }));
+  const f = () => mockFetch({ [API]: json(200, [release(CANONICAL_REPO, "v2.0.0", false)]) });
+  const m = await resolveReleaseModel(f());
   assert.equal(m.prerelease, false);
-  assert.ok(renderPage(m).includes("STABLE"));
+  const html = await renderPage(f());
+  assert.ok(html.includes('<span class="ver">v2.0.0</span><span class="tag dev">Stable</span>'));
+  assert.ok(!html.includes("Beta (pre-release)"));
 });
 
 test("generated page links use Ascendance3D/wrlforge and never the old owner", async () => {
-  const m = await resolveReleaseModel(mockFetch({ [API]: json(200, [release()]) }));
-  const html = renderPage(m);
-  assert.ok(html.includes(`href="https://github.com/${CANONICAL_REPO}" target="_blank" rel="noopener">App Repository`));
+  const f = () => mockFetch({ [API]: json(200, [release()]) });
+  const m = await resolveReleaseModel(f());
+  const html = await renderPage(f());
+  assert.ok(html.includes(`href="https://github.com/${CANONICAL_REPO}" target="_blank" rel="noopener">Application repository`));
+  assert.ok(html.includes(`href="https://github.com/${CANONICAL_REPO}/releases" target="_blank" rel="noopener">All releases`));
   assert.ok(html.includes(`https://raw.githubusercontent.com/${CANONICAL_REPO}/main/assets/generated/icons/runtime/icon.png`));
-  assert.ok(html.includes("PRE-RELEASE BETA"));
+  assert.ok(html.includes('<span class="tag dev">Beta (pre-release)</span>'));
   assert.ok(html.includes(m.checksumsUrl));
   assert.ok(!html.includes("DJAscendance"));
   assert.ok(!html.includes("undefined"));
