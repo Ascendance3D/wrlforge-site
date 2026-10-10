@@ -1,0 +1,47 @@
+# A3D-DCO-003: advisory DCO sign-off check (design A3D-DCO-003A).
+#
+# Trust model:
+# - Uses pull_request_target. Since 2025-12-08, GitHub always takes the workflow file and the
+#   checkout commit from the repository's DEFAULT branch, so a PR cannot change this file
+#   or the script for its own run.
+# - Never checks out, builds, or runs PR code. The only checkout is the default branch's
+#   .github/scripts directory (trusted, already reviewed and merged).
+# - Token is read-only (contents, pull-requests). No secrets are referenced.
+# - Untrusted PR data (title, branch name, commit text) is never interpolated with ${{ }} into
+#   `run:`. Only the numeric PR number and the repository name pass through env.
+name: DCO
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: dco-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dco:
+    name: dco
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      # Pinned to actions/checkout v7.0.1. Do NOT add `ref:`.
+      # The default under pull_request_target is the trusted default branch.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Verify DCO sign-off on every PR commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          DCO_MERGE_POLICY: exempt
+        run: python3 -I .github/scripts/dco_check.py
